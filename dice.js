@@ -443,11 +443,13 @@
       if (animation.phase === 1) {
         const t2 = Math.min(1, (jetzt - animation.start) / animation.duration);
         const eased2 = 1 - Math.pow(1 - t2, 3);
-        wuerfel.quaternion.slerpQuaternions(
-          animation.from,
-          animation.to,
-          eased2
-        );
+        if (animation.from && animation.to) {
+          wuerfel.quaternion.slerpQuaternions(
+            animation.from,
+            animation.to,
+            eased2
+          );
+        }
         if (t2 >= 1) {
           animation = null;
           const endTop = ermittleOberesMaterialIndex();
