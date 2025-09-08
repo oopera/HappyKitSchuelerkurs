@@ -22,6 +22,8 @@
     "#00AEEF",
   ];
 
+  const useOldAnimation = false;
+
   function ermittleTextFarbe(hintergrundHex) {
     try {
       const farbe = new DREI.Color(hintergrundHex);
@@ -309,31 +311,31 @@
 
   let animation = null; // { phase, ... }
 
-  // Neue Animation
+  function wuerfeln_improved() {
+    const zufallsAchse = new DREI.Vector3(
+      Math.random() * 2 - 1,
+      Math.random() * 2 - 1,
+      Math.random() * 2 - 1
+    ).normalize();
+    const staerke = 10 + Math.random() * 5; // rad/s
+    const winkelgeschwindigkeit = zufallsAchse.multiplyScalar(staerke);
 
-  // function wuerfeln() {
-  //   // Zufällige Winkelgeschwindigkeit mit ordentlicher Stärke
-  //   const zufallsAchse = new DREI.Vector3(
-  //     Math.random() * 2 - 1,
-  //     Math.random() * 2 - 1,
-  //     Math.random() * 2 - 1
-  //   ).normalize();
-  //   const staerke = 10 + Math.random() * 5; // rad/s
-  //   const winkelgeschwindigkeit = zufallsAchse.multiplyScalar(staerke);
-
-  //   animation = {
-  //     phase: 0, // 0 = rollen (Physik), 1 = ausrichten (kurzer Slerp)
-  //     start: performance.now(),
-  //     letzteZeit: performance.now(),
-  //     winkelgeschwindigkeit,
-  //     daempfung: 0.985,
-  //   };
-  //   hinweis("", true);
-  // }
-
-  // Alte Animation
+    animation = {
+      phase: 0,
+      start: performance.now(),
+      letzteZeit: performance.now(),
+      winkelgeschwindigkeit,
+      daempfung: 0.985,
+    };
+    hinweis("", true);
+  }
 
   function wuerfeln() {
+    if (!useOldAnimation) {
+      wuerfeln_improved();
+      return;
+    }
+
     animation = {
       phase: 0,
       start: performance.now(),
@@ -353,6 +355,7 @@
 
   function hinweis(nachricht, verstecken) {
     const el = document.getElementById("hinweis");
+    console.log(el, nachricht);
     if (verstecken) {
       el.style.display = "none";
       el.textContent = "";
@@ -388,55 +391,56 @@
     if (animation) {
       const jetzt = performance.now();
 
-      // Neue Animation
+      if (animation.phase === 0) {
+        if (!useOldAnimation) {
+          const dt = Math.min(0.05, (jetzt - animation.letzteZeit) / 1000);
+          animation.letzteZeit = jetzt;
+          const omega = animation.winkelgeschwindigkeit;
+          const winkel = omega.length() * dt;
+          if (winkel > 0) {
+            const achse = omega.clone().normalize();
+            const dq = new DREI.Quaternion().setFromAxisAngle(achse, winkel);
+            wuerfel.quaternion.multiplyQuaternions(dq, wuerfel.quaternion);
+          }
+          const faktor = Math.pow(animation.daempfung, dt * 60);
+          omega.multiplyScalar(faktor);
 
-      // if (animation.phase === 0) {
-      //   // Physikalische Rotation mit Winkelgeschwindigkeit und Dämpfung
-      //   const dt = Math.min(0.05, (jetzt - animation.letzteZeit) / 1000);
-      //   animation.letzteZeit = jetzt;
-      //   const omega = animation.winkelgeschwindigkeit;
-      //   const winkel = omega.length() * dt;
-      //   if (winkel > 0) {
-      //     const achse = omega.clone().normalize();
-      //     const dq = new DREI.Quaternion().setFromAxisAngle(achse, winkel);
-      //     wuerfel.quaternion.multiplyQuaternions(dq, wuerfel.quaternion);
-      //   }
-      //   const faktor = Math.pow(animation.daempfung, dt * 60);
-      //   omega.multiplyScalar(faktor);
-
-      //   // Wenn langsam genug -> Ausrichtphase
-      //   if (omega.length() < 0.6) {
-      //     const oberesMatIdx = ermittleOberesMaterialIndex();
-      //     const gierViertel = waehleGierFuerLesbarkeit(oberesMatIdx);
-      //     animation = {
-      //       phase: 1,
-      //       start: performance.now(),
-      //       dauer: 450,
-      //       von: wuerfel.quaternion.clone(),
-      //       zu: quaternionFuerObereFlaeche(oberesMatIdx, gierViertel),
-      //     };
-      //   }
-
-      // Alte Animation
-
-      const t = Math.min(1, (jetzt - animation.start) / animation.duration);
-      const eased = 1 - Math.pow(1 - t, 3);
-      wuerfel.quaternion.slerpQuaternions(animation.from, animation.to, eased);
-      if (t >= 1) {
-        if (animation.phase === 0) {
-          const topMatIdx = ermittleOberesMaterialIndex();
-          const yawTurns = waehleGierFuerLesbarkeit(topMatIdx);
-          animation = {
-            phase: 1,
-            start: performance.now(),
-            duration: 450,
-            from: wuerfel.quaternion.clone(),
-            to: quaternionFuerObereFlaeche(topMatIdx, yawTurns),
-          };
+          if (omega.length() < 0.6) {
+            const oberesMatIdx = ermittleOberesMaterialIndex();
+            const gierViertel = waehleGierFuerLesbarkeit(oberesMatIdx);
+            animation = {
+              phase: 1,
+              start: performance.now(),
+              duration: 450,
+              from: wuerfel.quaternion.clone(),
+              to: quaternionFuerObereFlaeche(oberesMatIdx, gierViertel),
+            };
+          }
+        } else if (useOldAnimation) {
+          const t = Math.min(1, (jetzt - animation.start) / animation.duration);
+          const eased = 1 - Math.pow(1 - t, 3);
+          wuerfel.quaternion.slerpQuaternions(
+            animation.from,
+            animation.to,
+            eased
+          );
+          if (t >= 1) {
+            if (animation.phase === 0) {
+              const topMatIdx = ermittleOberesMaterialIndex();
+              const yawTurns = waehleGierFuerLesbarkeit(topMatIdx);
+              animation = {
+                phase: 1,
+                start: performance.now(),
+                duration: 450,
+                from: wuerfel.quaternion.clone(),
+                to: quaternionFuerObereFlaeche(topMatIdx, yawTurns),
+              };
+            }
+          }
         }
+      }
 
-        // ---------------------------------------------------------
-      } else if (animation.phase === 1) {
+      if (animation.phase === 1) {
         const t2 = Math.min(1, (jetzt - animation.start) / animation.duration);
         const eased2 = 1 - Math.pow(1 - t2, 3);
         wuerfel.quaternion.slerpQuaternions(
