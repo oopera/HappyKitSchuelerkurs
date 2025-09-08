@@ -22,6 +22,26 @@
     "#00AEEF",
   ];
 
+  let materialien = [];
+  const geometrie = new DREI.BoxGeometry(2, 2, 2);
+  const wuerfel = new DREI.Mesh(geometrie, materialien);
+  const markierung = new DREI.Mesh(
+    new DREI.PlaneGeometry(2.04, 2.04),
+    new DREI.MeshBasicMaterial({
+      color: 0x10b981,
+      transparent: true,
+      opacity: 0,
+    })
+  );
+
+  const kantenGeom = new DREI.EdgesGeometry(new DREI.PlaneGeometry(2.04, 2.04));
+  const kanten = new DREI.LineSegments(
+    kantenGeom,
+    new DREI.LineBasicMaterial({ color: 0x10b981 })
+  );
+
+  let animation = null;
+
   const useOldAnimation = false;
 
   function ermittleTextFarbe(hintergrundHex) {
@@ -146,9 +166,6 @@
   const wuerfelGruppe = new DREI.Group();
   szene.add(wuerfelGruppe);
 
-  const geometrie = new DREI.BoxGeometry(2, 2, 2);
-  let materialien = [];
-
   function baueMaterialien(texte, farben) {
     if (materialien.length) {
       materialien.forEach((m) => {
@@ -168,24 +185,12 @@
     if (wuerfel) wuerfel.material = materialien;
   }
 
-  const wuerfel = new DREI.Mesh(geometrie, materialien);
   wuerfelGruppe.add(wuerfel);
 
   // Markierung für obere Fläche
-  const markierung = new DREI.Mesh(
-    new DREI.PlaneGeometry(2.04, 2.04),
-    new DREI.MeshBasicMaterial({
-      color: 0x10b981,
-      transparent: true,
-      opacity: 0,
-    })
-  );
+
   wuerfel.add(markierung);
-  const kantenGeom = new DREI.EdgesGeometry(new DREI.PlaneGeometry(2.04, 2.04));
-  const kanten = new DREI.LineSegments(
-    kantenGeom,
-    new DREI.LineBasicMaterial({ color: 0x10b981 })
-  );
+
   markierung.add(kanten);
 
   // ELEMENT FÜR DIE EINGABEFELDER (aus HTML)
@@ -308,8 +313,6 @@
     );
     markierung.quaternion.copy(q);
   }
-
-  let animation = null; // { phase, ... }
 
   function wuerfeln_improved() {
     const zufallsAchse = new DREI.Vector3(
