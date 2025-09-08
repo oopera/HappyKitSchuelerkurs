@@ -1,11 +1,11 @@
 (function () {
-  const THREE_NS = window.THREE;
-  if (!THREE_NS) {
-    console.error("THREE.js not loaded");
+  const DREI = window.THREE;
+  if (!DREI) {
+    console.error("THREE.js nicht geladen");
     return;
   }
 
-  const defaultFaceTexts = [
+  const standardSeitenTexte = [
     "Trink ein Glas Wasser.",
     "Mache einen kleinen Spaziergang.",
     "Was ist etwas wofür du dankbar bist?",
@@ -13,7 +13,7 @@
     "Berühre eine Pflanze.",
     "Worauf freust du dich diese Woche am meisten?",
   ];
-  const defaultFaceColors = [
+  const standardSeitenFarben = [
     "#C7017F",
     "#A2C617",
     "#FBBA00",
@@ -22,286 +22,320 @@
     "#00AEEF",
   ];
 
-  function getTextColor(bgHex) {
+  function ermittleTextFarbe(hintergrundHex) {
     try {
-      const color = new THREE_NS.Color(bgHex);
-      const r = color.r,
-        g = color.g,
-        b = color.b;
-      const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-      return luminance > 0.6 ? "#111111" : "#ffffff";
+      const farbe = new DREI.Color(hintergrundHex);
+      const r = farbe.r,
+        g = farbe.g,
+        b = farbe.b;
+      const helligkeit = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      return helligkeit > 0.6 ? "#111111" : "#ffffff";
     } catch (e) {
       return "#111111";
     }
   }
 
-  function createTextTexture(text, bg) {
-    const size = 512;
-    const canvas = document.createElement("canvas");
-    canvas.width = size;
-    canvas.height = size;
-    const ctx = canvas.getContext("2d");
+  function erzeugeTextTextur(text, hintergrund) {
+    const groesse = 512;
+    const leinwand = document.createElement("canvas");
+    leinwand.width = groesse;
+    leinwand.height = groesse;
+    const kontext = leinwand.getContext("2d");
 
-    const padding = 40;
-    const maxWidth = size - padding * 2;
-    const maxHeight = size - padding * 2;
+    const rand = 40;
+    const maxBreite = groesse - rand * 2;
+    const maxHoehe = groesse - rand * 2;
 
-    const wrapLines = (context, t, width) => {
-      const words = String(t ?? "").split(/\s+/);
-      const out = [];
-      let current = "";
-      for (let i = 0; i < words.length; i++) {
-        const candidate = current ? current + " " + words[i] : words[i];
-        if (context.measureText(candidate).width <= width) current = candidate;
+    const umbrecheZeilen = (ctx, t, breite) => {
+      const woerter = String(t ?? "").split(/\s+/);
+      const ausgabe = [];
+      let aktuell = "";
+      for (let i = 0; i < woerter.length; i++) {
+        const kandidat = aktuell ? aktuell + " " + woerter[i] : woerter[i];
+        if (ctx.measureText(kandidat).width <= breite) aktuell = kandidat;
         else {
-          if (current) out.push(current);
-          current = words[i];
+          if (aktuell) ausgabe.push(aktuell);
+          aktuell = woerter[i];
         }
       }
-      if (current) out.push(current);
-      return out.length ? out : [""];
+      if (aktuell) ausgabe.push(aktuell);
+      return ausgabe.length ? ausgabe : [""];
     };
 
-    let fontSize = 220;
-    let fittedLines = [String(text ?? "")];
-    while (fontSize >= 16) {
-      ctx.font = `${fontSize}px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial`;
-      const lines = wrapLines(ctx, text ?? "", maxWidth);
-      const lineHeight = Math.ceil(fontSize * 1.15);
-      const totalHeight = lines.length * lineHeight;
-      let widest = 0;
-      for (let i = 0; i < lines.length; i++)
-        widest = Math.max(widest, ctx.measureText(lines[i]).width);
-      if (totalHeight <= maxHeight && widest <= maxWidth) {
-        fittedLines = lines;
+    let schriftgroesse = 220;
+    let passendeZeilen = [String(text ?? "")];
+    while (schriftgroesse >= 16) {
+      kontext.font = `${schriftgroesse}px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial`;
+      const zeilen = umbrecheZeilen(kontext, text ?? "", maxBreite);
+      const zeilenHoehe = Math.ceil(schriftgroesse * 1.15);
+      const gesamtHoehe = zeilen.length * zeilenHoehe;
+      let breiteste = 0;
+      for (let i = 0; i < zeilen.length; i++)
+        breiteste = Math.max(breiteste, kontext.measureText(zeilen[i]).width);
+      if (gesamtHoehe <= maxHoehe && breiteste <= maxBreite) {
+        passendeZeilen = zeilen;
         break;
       }
-      fontSize -= 4;
+      schriftgroesse -= 4;
     }
 
-    ctx.fillStyle = bg;
-    ctx.fillRect(0, 0, size, size);
-    ctx.fillStyle = getTextColor(bg);
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.font = `${fontSize}px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial`;
-    const lineHeight = Math.ceil(fontSize * 1.15);
-    const totalHeight = fittedLines.length * lineHeight;
-    let y = size / 2 - totalHeight / 2 + lineHeight / 2;
-    for (let i = 0; i < fittedLines.length; i++) {
-      ctx.fillText(fittedLines[i], size / 2, y);
-      y += lineHeight;
+    kontext.fillStyle = hintergrund;
+    kontext.fillRect(0, 0, groesse, groesse);
+    kontext.fillStyle = ermittleTextFarbe(hintergrund);
+    kontext.textAlign = "center";
+    kontext.textBaseline = "middle";
+    kontext.font = `${schriftgroesse}px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial`;
+    const zeilenHoehe = Math.ceil(schriftgroesse * 1.15);
+    const gesamtHoehe = passendeZeilen.length * zeilenHoehe;
+    let y = groesse / 2 - gesamtHoehe / 2 + zeilenHoehe / 2;
+    for (let i = 0; i < passendeZeilen.length; i++) {
+      kontext.fillText(passendeZeilen[i], groesse / 2, y);
+      y += zeilenHoehe;
     }
 
-    const texture = new THREE_NS.CanvasTexture(canvas);
-    texture.anisotropy = 8;
-    texture.needsUpdate = true;
-    return texture;
+    const textur = new DREI.CanvasTexture(leinwand);
+    textur.anisotropy = 8;
+    textur.needsUpdate = true;
+    return textur;
   }
 
-  // material order for BoxGeometry: [ +x, -x, +y, -y, +z, -z ]
-  const slotToMaterialIndex = [2, 0, 4, 5, 1, 3];
-  const materialIndexToSlot = [1, 4, 0, 5, 2, 3];
-  const faceNormals = [
-    new THREE_NS.Vector3(1, 0, 0),
-    new THREE_NS.Vector3(-1, 0, 0),
-    new THREE_NS.Vector3(0, 1, 0),
-    new THREE_NS.Vector3(0, -1, 0),
-    new THREE_NS.Vector3(0, 0, 1),
-    new THREE_NS.Vector3(0, 0, -1),
+  // MATERIAL ORDER FÜR BOXGEOMETRY: [ +x, -x, +y, -y, +z, -z ]
+  const seiteZuMaterialIndex = [2, 0, 4, 5, 1, 3];
+  const materialIndexZuSeite = [1, 4, 0, 5, 2, 3];
+  const flaechenNormalen = [
+    new DREI.Vector3(1, 0, 0),
+    new DREI.Vector3(-1, 0, 0),
+    new DREI.Vector3(0, 1, 0),
+    new DREI.Vector3(0, -1, 0),
+    new DREI.Vector3(0, 0, 1),
+    new DREI.Vector3(0, 0, -1),
   ];
-  const faceTextUp = [
-    new THREE_NS.Vector3(0, 1, 0),
-    new THREE_NS.Vector3(0, 1, 0),
-    new THREE_NS.Vector3(0, 0, -1),
-    new THREE_NS.Vector3(0, 0, 1),
-    new THREE_NS.Vector3(0, 1, 0),
-    new THREE_NS.Vector3(0, 1, 0),
+  const textObenRichtung = [
+    new DREI.Vector3(0, 1, 0),
+    new DREI.Vector3(0, 1, 0),
+    new DREI.Vector3(0, 0, -1),
+    new DREI.Vector3(0, 0, 1),
+    new DREI.Vector3(0, 1, 0),
+    new DREI.Vector3(0, 1, 0),
   ];
 
-  const canvas = document.getElementById("scene");
-  const renderer = new THREE_NS.WebGLRenderer({
-    canvas,
+  // ELEMENT FÜR DEN WÜRFEL
+  const leinwandElement = document.getElementById("szene");
+  const renderer = new DREI.WebGLRenderer({
+    canvas: leinwandElement,
     antialias: true,
     alpha: true,
   });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 
-  const scene = new THREE_NS.Scene();
-  scene.background = new THREE_NS.Color(0xf3f4f6);
+  const szene = new DREI.Scene();
+  szene.background = new DREI.Color(0xf3f4f6);
 
-  const camera = new THREE_NS.PerspectiveCamera(45, 1, 0.1, 100);
-  camera.position.set(3.5, 3.0, 3.5);
-  camera.lookAt(0, 0, 0);
+  const kamera = new DREI.PerspectiveCamera(45, 1, 0.1, 100);
+  kamera.position.set(3.5, 3.0, 3.5);
+  kamera.lookAt(0, 0, 0);
 
-  const ambient = new THREE_NS.AmbientLight(0xffffff, 0.8);
-  scene.add(ambient);
-  const dir = new THREE_NS.DirectionalLight(0xffffff, 0.6);
-  dir.position.set(5, 10, 7.5);
-  scene.add(dir);
+  const umgebungsLicht = new DREI.AmbientLight(0xffffff, 0.8);
+  szene.add(umgebungsLicht);
+  const richtungsLicht = new DREI.DirectionalLight(0xffffff, 0.6);
+  richtungsLicht.position.set(5, 10, 7.5);
+  szene.add(richtungsLicht);
 
-  const diceGroup = new THREE_NS.Group();
-  scene.add(diceGroup);
+  const wuerfelGruppe = new DREI.Group();
+  szene.add(wuerfelGruppe);
 
-  const geometry = new THREE_NS.BoxGeometry(2, 2, 2);
-  let materials = [];
+  const geometrie = new DREI.BoxGeometry(2, 2, 2);
+  let materialien = [];
 
-  function buildMaterials(texts, colors) {
-    // Dispose old
-    if (materials.length) {
-      materials.forEach((m) => {
+  function baueMaterialien(texte, farben) {
+    if (materialien.length) {
+      materialien.forEach((m) => {
         if (!m) return;
         if (m.map) m.map.dispose();
         m.dispose();
       });
     }
     const mats = new Array(6);
-    for (let slot = 0; slot < 6; slot++) {
-      const mi = slotToMaterialIndex[slot];
-      mats[mi] = new THREE_NS.MeshBasicMaterial({
-        map: createTextTexture(texts[slot], colors[slot]),
+    for (let seite = 0; seite < 6; seite++) {
+      const mi = seiteZuMaterialIndex[seite];
+      mats[mi] = new DREI.MeshBasicMaterial({
+        map: erzeugeTextTextur(texte[seite], farben[seite]),
       });
     }
-    materials = mats;
-    if (mesh) mesh.material = materials;
+    materialien = mats;
+    if (wuerfel) wuerfel.material = materialien;
   }
 
-  const mesh = new THREE_NS.Mesh(geometry, materials);
-  diceGroup.add(mesh);
+  const wuerfel = new DREI.Mesh(geometrie, materialien);
+  wuerfelGruppe.add(wuerfel);
 
-  // Top-face indicator
-  const indicator = new THREE_NS.Mesh(
-    new THREE_NS.PlaneGeometry(2.04, 2.04),
-    new THREE_NS.MeshBasicMaterial({
+  // Markierung für obere Fläche
+  const markierung = new DREI.Mesh(
+    new DREI.PlaneGeometry(2.04, 2.04),
+    new DREI.MeshBasicMaterial({
       color: 0x10b981,
       transparent: true,
       opacity: 0,
     })
   );
-  mesh.add(indicator);
-  const edgeGeom = new THREE_NS.EdgesGeometry(
-    new THREE_NS.PlaneGeometry(2.04, 2.04)
+  wuerfel.add(markierung);
+  const kantenGeom = new DREI.EdgesGeometry(new DREI.PlaneGeometry(2.04, 2.04));
+  const kanten = new DREI.LineSegments(
+    kantenGeom,
+    new DREI.LineBasicMaterial({ color: 0x10b981 })
   );
-  const edges = new THREE_NS.LineSegments(
-    edgeGeom,
-    new THREE_NS.LineBasicMaterial({ color: 0x10b981 })
-  );
-  indicator.add(edges);
+  markierung.add(kanten);
 
-  // Controls setup
-  const controlsContainer = document.getElementById("controls");
-  const faceTexts = defaultFaceTexts.slice();
-  const faceColors = defaultFaceColors.slice();
+  // ELEMENT FÜR DIE EINGABEFELDER (aus HTML)
+  const seitenTexte = standardSeitenTexte.slice();
+  const seitenFarben = standardSeitenFarben.slice();
 
-  function renderControls() {
-    controlsContainer.innerHTML = "";
+  const textEingaebe = [
+    document.getElementById("seiteText1"),
+    document.getElementById("seiteText2"),
+    document.getElementById("seiteText3"),
+    document.getElementById("seiteText4"),
+    document.getElementById("seiteText5"),
+    document.getElementById("seiteText6"),
+  ];
+  const farbEingaebe = [
+    document.getElementById("seiteFarbe1"),
+    document.getElementById("seiteFarbe2"),
+    document.getElementById("seiteFarbe3"),
+    document.getElementById("seiteFarbe4"),
+    document.getElementById("seiteFarbe5"),
+    document.getElementById("seiteFarbe6"),
+  ];
+
+  for (let i = 0; i < 6; i++) {
+    if (textEingaebe[i]) textEingaebe[i].value = seitenTexte[i];
+    if (farbEingaebe[i]) farbEingaebe[i].value = seitenFarben[i];
+  }
+
+  function verbindeSteuerung() {
     for (let i = 0; i < 6; i++) {
-      const row = document.createElement("div");
-      row.className = "slot";
-      const text = document.createElement("input");
-      text.type = "text";
-      text.value = faceTexts[i];
-      text.placeholder = `Text for slot ${i + 1}`;
-      text.addEventListener("input", () => {
-        faceTexts[i] = text.value;
-        const mi = slotToMaterialIndex[i];
-        const m = materials[mi];
-        if (m && m.map) m.map.dispose();
-        m.map = createTextTexture(faceTexts[i], faceColors[i]);
-        m.needsUpdate = true;
-      });
-      const color = document.createElement("input");
-      color.type = "color";
-      color.value = faceColors[i];
-      color.addEventListener("input", () => {
-        faceColors[i] = color.value;
-        const mi = slotToMaterialIndex[i];
-        const m = materials[mi];
-        if (m && m.map) m.map.dispose();
-        m.map = createTextTexture(faceTexts[i], faceColors[i]);
-        m.needsUpdate = true;
-      });
-      row.appendChild(text);
-      row.appendChild(color);
-      controlsContainer.appendChild(row);
+      const text = textEingaebe[i];
+      const farbe = farbEingaebe[i];
+      if (text) {
+        text.addEventListener("input", () => {
+          seitenTexte[i] = text.value;
+          const mi = seiteZuMaterialIndex[i];
+          const m = materialien[mi];
+          if (m && m.map) m.map.dispose();
+          m.map = erzeugeTextTextur(seitenTexte[i], seitenFarben[i]);
+          m.needsUpdate = true;
+        });
+      }
+      if (farbe) {
+        farbe.addEventListener("input", () => {
+          seitenFarben[i] = farbe.value;
+          const mi = seiteZuMaterialIndex[i];
+          const m = materialien[mi];
+          if (m && m.map) m.map.dispose();
+          m.map = erzeugeTextTextur(seitenTexte[i], seitenFarben[i]);
+          m.needsUpdate = true;
+        });
+      }
     }
   }
 
-  renderControls();
-  buildMaterials(faceTexts, faceColors);
+  verbindeSteuerung();
+  baueMaterialien(seitenTexte, seitenFarben);
 
-  function getTopMaterialIndex() {
-    const q = mesh.quaternion;
+  function ermittleOberesMaterialIndex() {
+    const q = wuerfel.quaternion;
     let bestIdx = 2;
     let bestDot = -Infinity;
-    const up = new THREE_NS.Vector3(0, 1, 0);
+    const oben = new DREI.Vector3(0, 1, 0);
     for (let i = 0; i < 6; i++) {
-      const worldNormal = faceNormals[i].clone().applyQuaternion(q);
-      const dot = worldNormal.dot(up);
-      if (dot > bestDot) {
-        bestDot = dot;
+      const weltNormal = flaechenNormalen[i].clone().applyQuaternion(q);
+      const punkt = weltNormal.dot(oben);
+      if (punkt > bestDot) {
+        bestDot = punkt;
         bestIdx = i;
       }
     }
     return bestIdx;
   }
 
-  function quaternionForTopFace(materialIndex, yawQuarterTurns) {
-    const from = faceNormals[materialIndex];
-    const to = new THREE_NS.Vector3(0, 1, 0);
-    const align = new THREE_NS.Quaternion().setFromUnitVectors(from, to);
-    const yaw = new THREE_NS.Quaternion().setFromAxisAngle(
-      new THREE_NS.Vector3(0, 1, 0),
-      (Math.PI / 2) * (yawQuarterTurns % 4)
+  function quaternionFuerObereFlaeche(materialIndex, drehViertel) {
+    const von = flaechenNormalen[materialIndex];
+    const zu = new DREI.Vector3(0, 1, 0);
+    const ausrichten = new DREI.Quaternion().setFromUnitVectors(von, zu);
+    const gieren = new DREI.Quaternion().setFromAxisAngle(
+      new DREI.Vector3(0, 1, 0),
+      (Math.PI / 2) * (drehViertel % 4)
     );
-    return yaw.multiply(align);
+    return gieren.multiply(ausrichten);
   }
 
-  function chooseYawForReadable(materialIndex) {
-    let bestTurns = 0;
-    let bestScore = -Infinity;
-    const centerLocal = faceNormals[materialIndex].clone().multiplyScalar(1.0);
+  function waehleGierFuerLesbarkeit(materialIndex) {
+    let besteViertel = 0;
+    let besteBewertung = -Infinity;
+    const zentrumLokal = flaechenNormalen[materialIndex]
+      .clone()
+      .multiplyScalar(1.0);
     for (let k = 0; k < 4; k++) {
-      const q = quaternionForTopFace(materialIndex, k);
-      const upLocal = faceTextUp[materialIndex];
-      const centerWorld = centerLocal.clone().applyQuaternion(q);
-      const upWorld = upLocal.clone().applyQuaternion(q).normalize();
-      const p0 = centerWorld.clone();
-      const p1 = centerWorld.clone().add(upWorld.clone().multiplyScalar(0.5));
-      const p0N = p0.clone().project(camera);
-      const p1N = p1.clone().project(camera);
+      const q = quaternionFuerObereFlaeche(materialIndex, k);
+      const obenLokal = textObenRichtung[materialIndex];
+      const zentrumWelt = zentrumLokal.clone().applyQuaternion(q);
+      const obenWelt = obenLokal.clone().applyQuaternion(q).normalize();
+      const p0 = zentrumWelt.clone();
+      const p1 = zentrumWelt.clone().add(obenWelt.clone().multiplyScalar(0.5));
+      const p0N = p0.clone().project(kamera);
+      const p1N = p1.clone().project(kamera);
       const dx = p1N.x - p0N.x;
       const dy = p1N.y - p0N.y;
-      const score = dy - Math.abs(dx) * 0.25;
-      if (score > bestScore) {
-        bestScore = score;
-        bestTurns = k;
+      const bewertung = dy - Math.abs(dx) * 0.25;
+      if (bewertung > besteBewertung) {
+        besteBewertung = bewertung;
+        besteViertel = k;
       }
     }
-    return bestTurns;
+    return besteViertel;
   }
 
-  function updateIndicator() {
-    const topIdx = getTopMaterialIndex();
-    const localNormal = faceNormals[topIdx];
-    const pos = localNormal.clone().multiplyScalar(1.02);
-    indicator.position.copy(pos);
-    const q = new THREE_NS.Quaternion().setFromUnitVectors(
-      new THREE_NS.Vector3(0, 0, 1),
-      localNormal
+  function aktualisiereMarkierung() {
+    const topIdx = ermittleOberesMaterialIndex();
+    const lokaleNormale = flaechenNormalen[topIdx];
+    const pos = lokaleNormale.clone().multiplyScalar(1.02);
+    markierung.position.copy(pos);
+    const q = new DREI.Quaternion().setFromUnitVectors(
+      new DREI.Vector3(0, 0, 1),
+      lokaleNormale
     );
-    indicator.quaternion.copy(q);
+    markierung.quaternion.copy(q);
   }
 
-  let anim = null; // { phase, start, duration, from, to }
-  function roll() {
-    anim = {
+  let animation = null; // { phase, ... }
+  function wuerfeln() {
+    // Zufällige Winkelgeschwindigkeit mit ordentlicher Stärke
+    const zufallsAchse = new DREI.Vector3(
+      Math.random() * 2 - 1,
+      Math.random() * 2 - 1,
+      Math.random() * 2 - 1
+    ).normalize();
+    const staerke = 10 + Math.random() * 5; // rad/s
+    const winkelgeschwindigkeit = zufallsAchse.multiplyScalar(staerke);
+
+    animation = {
+      phase: 0, // 0 = rollen (Physik), 1 = ausrichten (kurzer Slerp)
+      start: performance.now(),
+      letzteZeit: performance.now(),
+      winkelgeschwindigkeit,
+      daempfung: 0.985,
+    };
+    hinweis("", true);
+  }
+
+  function wuerfeln_animation() {
+    animation = {
       phase: 1,
       start: performance.now(),
       duration: 1200,
-      from: mesh.quaternion.clone(),
-      to: new THREE_NS.Quaternion().setFromEuler(
-        new THREE_NS.Euler(
+      from: wuerfel.quaternion.clone(),
+      to: new DREI.Quaternion().setFromEuler(
+        new DREI.Euler(
           Math.PI * 2 * (2 + Math.random() * 3),
           Math.PI * 2 * (2 + Math.random() * 3),
           Math.PI * 2 * (2 + Math.random() * 3),
@@ -309,68 +343,87 @@
         )
       ),
     };
-    toast("", true);
+    hinweis("", true);
   }
 
-  function toast(message, hide) {
-    const el = document.getElementById("toast");
-    if (hide) {
+  function hinweis(nachricht, verstecken) {
+    const el = document.getElementById("hinweis");
+    if (verstecken) {
       el.style.display = "none";
       el.textContent = "";
       return;
     }
-    el.textContent = message;
+    el.textContent = nachricht;
     el.style.display = "block";
   }
 
-  document.getElementById("rollBtn").addEventListener("click", roll);
+  // ELEMENT FÜR DEN WÜRFEL
+  document.getElementById("wuerfelButton").addEventListener("click", wuerfeln);
 
-  function resizeRendererToDisplaySize() {
-    const rect = canvas.getBoundingClientRect();
-    const width = Math.floor(rect.width);
-    const height = Math.floor(rect.height);
-    const needResize = canvas.width !== width || canvas.height !== height;
-    if (needResize) {
-      renderer.setSize(width, height, false);
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
+  function passeRendererAnAnzeigeAn() {
+    const rect = leinwandElement.getBoundingClientRect();
+    const breite = Math.floor(rect.width);
+    const hoehe = Math.floor(rect.height);
+    const mussAnpassen =
+      leinwandElement.width !== breite || leinwandElement.height !== hoehe;
+    if (mussAnpassen) {
+      renderer.setSize(breite, hoehe, false);
+      kamera.aspect = breite / hoehe;
+      kamera.updateProjectionMatrix();
     }
-    return needResize;
+    return mussAnpassen;
   }
 
-  function animate() {
-    requestAnimationFrame(animate);
-    resizeRendererToDisplaySize();
+  function animiere() {
+    requestAnimationFrame(animiere);
+    passeRendererAnAnzeigeAn();
 
-    updateIndicator();
+    aktualisiereMarkierung();
 
-    if (anim) {
-      const now = performance.now();
-      const t = Math.min(1, (now - anim.start) / anim.duration);
-      const eased = 1 - Math.pow(1 - t, 3);
-      mesh.quaternion.slerpQuaternions(anim.from, anim.to, eased);
-      if (t >= 1) {
-        if (anim.phase === 1) {
-          const topMatIdx = getTopMaterialIndex();
-          const yawTurns = chooseYawForReadable(topMatIdx);
-          anim = {
-            phase: 2,
+    if (animation) {
+      const jetzt = performance.now();
+      if (animation.phase === 0) {
+        // Physikalische Rotation mit Winkelgeschwindigkeit und Dämpfung
+        const dt = Math.min(0.05, (jetzt - animation.letzteZeit) / 1000);
+        animation.letzteZeit = jetzt;
+        const omega = animation.winkelgeschwindigkeit;
+        const winkel = omega.length() * dt;
+        if (winkel > 0) {
+          const achse = omega.clone().normalize();
+          const dq = new DREI.Quaternion().setFromAxisAngle(achse, winkel);
+          wuerfel.quaternion.multiplyQuaternions(dq, wuerfel.quaternion);
+        }
+        const faktor = Math.pow(animation.daempfung, dt * 60);
+        omega.multiplyScalar(faktor);
+
+        // Wenn langsam genug -> Ausrichtphase
+        if (omega.length() < 0.6) {
+          const oberesMatIdx = ermittleOberesMaterialIndex();
+          const gierViertel = waehleGierFuerLesbarkeit(oberesMatIdx);
+          animation = {
+            phase: 1,
             start: performance.now(),
-            duration: 450,
-            from: mesh.quaternion.clone(),
-            to: quaternionForTopFace(topMatIdx, yawTurns),
+            dauer: 450,
+            von: wuerfel.quaternion.clone(),
+            zu: quaternionFuerObereFlaeche(oberesMatIdx, gierViertel),
           };
-        } else if (anim.phase === 2) {
-          anim = null;
-          const finalTop = getTopMaterialIndex();
-          const slotIdx = materialIndexToSlot[finalTop];
-          toast(faceTexts[slotIdx]);
+        }
+      } else if (animation.phase === 1) {
+        // Kurzer Slerp zum sauberen Aufsetzen und lesbarer Orientierung
+        const t = Math.min(1, (jetzt - animation.start) / animation.dauer);
+        const weich = 1 - Math.pow(1 - t, 3);
+        wuerfel.quaternion.slerpQuaternions(animation.von, animation.zu, weich);
+        if (t >= 1) {
+          animation = null;
+          const endTop = ermittleOberesMaterialIndex();
+          const seitenIndex = materialIndexZuSeite[endTop];
+          hinweis(seitenTexte[seitenIndex]);
         }
       }
     }
 
-    renderer.render(scene, camera);
+    renderer.render(szene, kamera);
   }
 
-  animate();
+  animiere();
 })();
