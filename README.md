@@ -16,7 +16,7 @@ Willkommen! In diesem Projekt bekommen Schüler:innen einen praktischen Einstieg
 - Öffne `index.html` im Browser (Doppelklick) oder nutze eine Live-Server-Erweiterung in deinem Editor.
 - Der Code liegt hier:
   - `index.html` – Startseite/Struktur
-  - `dice.js` – Beispiel-Logik (JavaScript)
+  - `würfel.js` – Beispiel-Logik (JavaScript)
 
 ## Was machen Browser und Server?
 

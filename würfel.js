@@ -1,10 +1,12 @@
 (function () {
+  // Würfel mit THREE.js: Texturen, Eingaben, Animation, Hinweisanzeige
   const DREI = window.THREE;
   if (!DREI) {
     console.error("THREE.js nicht geladen");
     return;
   }
 
+  // Standardtexte für die 6 Würfelseiten
   const standardSeitenTexte = [
     "Trink ein Glas Wasser.",
     "Mache einen kleinen Spaziergang.",
@@ -13,6 +15,7 @@
     "Berühre eine Pflanze.",
     "Worauf freust du dich diese Woche am meisten?",
   ];
+  // Standardfarben für die 6 Würfelseiten
   const standardSeitenFarben = [
     "#C7017F",
     "#A2C617",
@@ -22,9 +25,11 @@
     "#00AEEF",
   ];
 
+  // Materialien der 6 Seiten (wird dynamisch neu erzeugt)
   let materialien = [];
   const geometrie = new DREI.BoxGeometry(2, 2, 2);
   const wuerfel = new DREI.Mesh(geometrie, materialien);
+  // Halbtransparente Markierung für die obenliegende Seite
   const markierung = new DREI.Mesh(
     new DREI.PlaneGeometry(2.04, 2.04),
     new DREI.MeshBasicMaterial({
@@ -34,6 +39,7 @@
     })
   );
 
+  // Kanten-Overlay der Markierungs-Plane
   const kantenGeom = new DREI.EdgesGeometry(new DREI.PlaneGeometry(2.04, 2.04));
   const kanten = new DREI.LineSegments(
     kantenGeom,
@@ -42,88 +48,13 @@
 
   let animation = null;
 
-  const useOldAnimation = false;
-
-  function ermittleTextFarbe(hintergrundHex) {
-    try {
-      const farbe = new DREI.Color(hintergrundHex);
-      const r = farbe.r,
-        g = farbe.g,
-        b = farbe.b;
-      const helligkeit = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-      return helligkeit > 0.6 ? "#111111" : "#ffffff";
-    } catch (e) {
-      return "#111111";
-    }
-  }
-
-  function erzeugeTextTextur(text, hintergrund) {
-    const groesse = 512;
-    const leinwand = document.createElement("canvas");
-    leinwand.width = groesse;
-    leinwand.height = groesse;
-    const kontext = leinwand.getContext("2d");
-
-    const rand = 40;
-    const maxBreite = groesse - rand * 2;
-    const maxHoehe = groesse - rand * 2;
-
-    const umbrecheZeilen = (ctx, t, breite) => {
-      const woerter = String(t ?? "").split(/\s+/);
-      const ausgabe = [];
-      let aktuell = "";
-      for (let i = 0; i < woerter.length; i++) {
-        const kandidat = aktuell ? aktuell + " " + woerter[i] : woerter[i];
-        if (ctx.measureText(kandidat).width <= breite) aktuell = kandidat;
-        else {
-          if (aktuell) ausgabe.push(aktuell);
-          aktuell = woerter[i];
-        }
-      }
-      if (aktuell) ausgabe.push(aktuell);
-      return ausgabe.length ? ausgabe : [""];
-    };
-
-    let schriftgroesse = 220;
-    let passendeZeilen = [String(text ?? "")];
-    while (schriftgroesse >= 16) {
-      kontext.font = `${schriftgroesse}px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial`;
-      const zeilen = umbrecheZeilen(kontext, text ?? "", maxBreite);
-      const zeilenHoehe = Math.ceil(schriftgroesse * 1.15);
-      const gesamtHoehe = zeilen.length * zeilenHoehe;
-      let breiteste = 0;
-      for (let i = 0; i < zeilen.length; i++)
-        breiteste = Math.max(breiteste, kontext.measureText(zeilen[i]).width);
-      if (gesamtHoehe <= maxHoehe && breiteste <= maxBreite) {
-        passendeZeilen = zeilen;
-        break;
-      }
-      schriftgroesse -= 4;
-    }
-
-    kontext.fillStyle = hintergrund;
-    kontext.fillRect(0, 0, groesse, groesse);
-    kontext.fillStyle = ermittleTextFarbe(hintergrund);
-    kontext.textAlign = "center";
-    kontext.textBaseline = "middle";
-    kontext.font = `${schriftgroesse}px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial`;
-    const zeilenHoehe = Math.ceil(schriftgroesse * 1.15);
-    const gesamtHoehe = passendeZeilen.length * zeilenHoehe;
-    let y = groesse / 2 - gesamtHoehe / 2 + zeilenHoehe / 2;
-    for (let i = 0; i < passendeZeilen.length; i++) {
-      kontext.fillText(passendeZeilen[i], groesse / 2, y);
-      y += zeilenHoehe;
-    }
-
-    const textur = new DREI.CanvasTexture(leinwand);
-    textur.anisotropy = 8;
-    textur.needsUpdate = true;
-    return textur;
-  }
+  // true = neue, gedämpfte Rotation; false = alte, zeitbasierte Animation
+  const PhysikbasierteAnimation = true;
 
   // MATERIAL ORDER FÜR BOXGEOMETRY: [ +x, -x, +y, -y, +z, -z ]
   const seiteZuMaterialIndex = [2, 0, 4, 5, 1, 3];
   const materialIndexZuSeite = [1, 4, 0, 5, 2, 3];
+  // Lokale Normalen jeder Seitenfläche
   const flaechenNormalen = [
     new DREI.Vector3(1, 0, 0),
     new DREI.Vector3(-1, 0, 0),
@@ -132,6 +63,7 @@
     new DREI.Vector3(0, 0, 1),
     new DREI.Vector3(0, 0, -1),
   ];
+  // Für jede Seite: Richtung, in die der Text "nach oben" zeigt
   const textObenRichtung = [
     new DREI.Vector3(0, 1, 0),
     new DREI.Vector3(0, 1, 0),
@@ -148,6 +80,7 @@
     antialias: true,
     alpha: true,
   });
+  // Pixelratio begrenzen für Performance auf High-DPI-Displays
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 
   const szene = new DREI.Scene();
@@ -166,6 +99,7 @@
   const wuerfelGruppe = new DREI.Group();
   szene.add(wuerfelGruppe);
 
+  // Erzeugt Materialien aus Text+Farbe; entsorgt alte Texturen/Materialien
   function baueMaterialien(texte, farben) {
     if (materialien.length) {
       materialien.forEach((m) => {
@@ -178,7 +112,7 @@
     for (let seite = 0; seite < 6; seite++) {
       const mi = seiteZuMaterialIndex[seite];
       mats[mi] = new DREI.MeshBasicMaterial({
-        map: erzeugeTextTextur(texte[seite], farben[seite]),
+        map: Helpers.erzeugeTextTextur(texte[seite], farben[seite]),
       });
     }
     materialien = mats;
@@ -219,36 +153,62 @@
     if (farbEingaebe[i]) farbEingaebe[i].value = seitenFarben[i];
   }
 
+  // Text geändert: Textur der betreffenden Seite neu rendern
+  function onSeiteTextInput(index, e) {
+    seitenTexte[index] = e.target.value;
+    const mi = seiteZuMaterialIndex[index];
+    const m = materialien[mi];
+    if (m && m.map) m.map.dispose();
+    m.map = Helpers.erzeugeTextTextur(seitenTexte[index], seitenFarben[index]);
+    m.needsUpdate = true;
+  }
+
+  // Farbe geändert: Textur der betreffenden Seite neu rendern
+  function onSeiteFarbeInput(index, e) {
+    seitenFarben[index] = e.target.value;
+    const mi = seiteZuMaterialIndex[index];
+    const m = materialien[mi];
+    if (m && m.map) m.map.dispose();
+    m.map = Helpers.erzeugeTextTextur(seitenTexte[index], seitenFarben[index]);
+    m.needsUpdate = true;
+  }
+
+  // const t1 = document.getElementById("seiteText1");
+  // if (t1) t1.addEventListener("input", (e) => onSeiteTextInput(0, e));
+
+  // Verdrahtet Inputs (Texte/Farben) mit den Handlern
   function verbindeSteuerung() {
-    for (let i = 0; i < 6; i++) {
-      const text = textEingaebe[i];
-      const farbe = farbEingaebe[i];
-      if (text) {
-        text.addEventListener("input", () => {
-          seitenTexte[i] = text.value;
-          const mi = seiteZuMaterialIndex[i];
-          const m = materialien[mi];
-          if (m && m.map) m.map.dispose();
-          m.map = erzeugeTextTextur(seitenTexte[i], seitenFarben[i]);
-          m.needsUpdate = true;
-        });
-      }
-      if (farbe) {
-        farbe.addEventListener("input", () => {
-          seitenFarben[i] = farbe.value;
-          const mi = seiteZuMaterialIndex[i];
-          const m = materialien[mi];
-          if (m && m.map) m.map.dispose();
-          m.map = erzeugeTextTextur(seitenTexte[i], seitenFarben[i]);
-          m.needsUpdate = true;
-        });
-      }
-    }
+    const t1 = document.getElementById("seiteText1");
+    if (t1) t1.addEventListener("input", (e) => onSeiteTextInput(0, e));
+    const t2 = document.getElementById("seiteText2");
+    if (t2) t2.addEventListener("input", (e) => onSeiteTextInput(1, e));
+    const t3 = document.getElementById("seiteText3");
+    if (t3) t3.addEventListener("input", (e) => onSeiteTextInput(2, e));
+    const t4 = document.getElementById("seiteText4");
+    if (t4) t4.addEventListener("input", (e) => onSeiteTextInput(3, e));
+    const t5 = document.getElementById("seiteText5");
+    if (t5) t5.addEventListener("input", (e) => onSeiteTextInput(4, e));
+    const t6 = document.getElementById("seiteText6");
+    if (t6) t6.addEventListener("input", (e) => onSeiteTextInput(5, e));
+
+    const f1 = document.getElementById("seiteFarbe1");
+    if (f1) f1.addEventListener("input", (e) => onSeiteFarbeInput(0, e));
+    const f2 = document.getElementById("seiteFarbe2");
+    if (f2) f2.addEventListener("input", (e) => onSeiteFarbeInput(1, e));
+    const f3 = document.getElementById("seiteFarbe3");
+    if (f3) f3.addEventListener("input", (e) => onSeiteFarbeInput(2, e));
+    const f4 = document.getElementById("seiteFarbe4");
+    if (f4) f4.addEventListener("input", (e) => onSeiteFarbeInput(3, e));
+    const f5 = document.getElementById("seiteFarbe5");
+    if (f5) f5.addEventListener("input", (e) => onSeiteFarbeInput(4, e));
+    const f6 = document.getElementById("seiteFarbe6");
+    if (f6) f6.addEventListener("input", (e) => onSeiteFarbeInput(5, e));
   }
 
   verbindeSteuerung();
   baueMaterialien(seitenTexte, seitenFarben);
 
+  // Bestimmt die aktuell nach oben gerichtete Fläche (Materialindex 0..5)
   function ermittleOberesMaterialIndex() {
     const q = wuerfel.quaternion;
     let bestIdx = 2;
@@ -265,6 +225,7 @@
     return bestIdx;
   }
 
+  // Orientierung, die eine gegebene Fläche nach oben bringt; drehViertel rotiert um Y
   function quaternionFuerObereFlaeche(materialIndex, drehViertel) {
     const von = flaechenNormalen[materialIndex];
     const zu = new DREI.Vector3(0, 1, 0);
@@ -276,6 +237,7 @@
     return gieren.multiply(ausrichten);
   }
 
+  // Wählt 0..3 Vierteldrehungen für bestmögliche Lesbarkeit der Textausrichtung
   function waehleGierFuerLesbarkeit(materialIndex) {
     let besteViertel = 0;
     let besteBewertung = -Infinity;
@@ -302,6 +264,7 @@
     return besteViertel;
   }
 
+  // Positioniert die Markierung über der oberen Fläche
   function aktualisiereMarkierung() {
     const topIdx = ermittleOberesMaterialIndex();
     const lokaleNormale = flaechenNormalen[topIdx];
@@ -314,7 +277,8 @@
     markierung.quaternion.copy(q);
   }
 
-  function wuerfeln_improved() {
+  // Neue Animation mit zufälliger Achse und Dämpfung ("physikalischer")
+  function physischesWürfeln() {
     const zufallsAchse = new DREI.Vector3(
       Math.random() * 2 - 1,
       Math.random() * 2 - 1,
@@ -333,9 +297,10 @@
     hinweis("", true);
   }
 
+  // Startet die Würfelanimation
   function wuerfeln() {
-    if (!useOldAnimation) {
-      wuerfeln_improved();
+    if (PhysikbasierteAnimation) {
+      physischesWürfeln();
       return;
     }
 
@@ -356,9 +321,9 @@
     hinweis("", true);
   }
 
+  // Anzeigeelement unter dem Würfel ein-/ausblenden und Text setzen
   function hinweis(nachricht, verstecken) {
     const el = document.getElementById("hinweis");
-    console.log(el, nachricht);
     if (verstecken) {
       el.style.display = "none";
       el.textContent = "";
@@ -371,6 +336,7 @@
   // ELEMENT FÜR DEN WÜRFEL
   document.getElementById("wuerfelButton").addEventListener("click", wuerfeln);
 
+  // Passt Renderergröße und Kamera an die aktuelle Canvasgröße an
   function passeRendererAnAnzeigeAn() {
     const rect = leinwandElement.getBoundingClientRect();
     const breite = Math.floor(rect.width);
@@ -385,6 +351,7 @@
     return mussAnpassen;
   }
 
+  // Render-Loop: Größe anpassen, Markierung/Animation aktualisieren, Szene rendern
   function animiere() {
     requestAnimationFrame(animiere);
     passeRendererAnAnzeigeAn();
@@ -395,7 +362,7 @@
       const jetzt = performance.now();
 
       if (animation.phase === 0) {
-        if (!useOldAnimation) {
+        if (PhysikbasierteAnimation) {
           const dt = Math.min(0.05, (jetzt - animation.letzteZeit) / 1000);
           animation.letzteZeit = jetzt;
           const omega = animation.winkelgeschwindigkeit;
@@ -419,7 +386,7 @@
               to: quaternionFuerObereFlaeche(oberesMatIdx, gierViertel),
             };
           }
-        } else if (useOldAnimation) {
+        } else {
           const t = Math.min(1, (jetzt - animation.start) / animation.duration);
           const eased = 1 - Math.pow(1 - t, 3);
           wuerfel.quaternion.slerpQuaternions(
