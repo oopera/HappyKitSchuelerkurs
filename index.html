@@ -26,6 +26,28 @@
       background: #ffffff;
       border: 1px solid #e5e7eb;
     }
+    footer {
+      padding: 16px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+    }
+    h1 {
+      margin: 0;
+      font-size: 16px;
+    }
+    h2 {
+      margin: 0;
+      font-size: 12px;
+      font-weight: 400;
+      color: #6b7280;
+    }
+    p {
+      margin: 0;
+      font-size: 12px;
+      font-weight: 400;
+      color: #6b7280;
+    }
+
     .bereich {
       background: #ffffff;
       border: 1px solid #e5e7eb;
@@ -64,10 +86,16 @@
       display: block;
     }
 
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
     .hinweis {
-      position: fixed;
-      left: 50%;
-      transform: translateX(-50%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
       bottom: 16px;
       background: #ffffff;
       border: 1px solid #e5e7eb;
@@ -83,7 +111,7 @@
 
 <body>
   <header>
-    <h1 style="margin: 0; font-size: 16px">HappyKit Würfel</h1>
+    <h1>Smarte Technik, starke Psyche: Ein Workshop fürs Wohlbefinden</h1>
   </header>
   <main>
     <div class="bereich">
@@ -119,5 +147,14 @@
       <canvas id="szene"></canvas>
     </div>
   </main>
-  <div class="hinweis" id="hinweis" style="display: none"></div>
+  <div class="grid">
+    <div class="hinweis" id="hinweis">
+      Rolle den Würfel und finde die richtige Antwort!
+    </div>
+    <footer>
+      <h2>Talenttage Ruhr 30.09.2025</h2>
+
+      <p>Hochschule Ruhr West</p>
+    </footer>
+  </div>
 </body>

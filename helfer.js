@@ -103,9 +103,192 @@
     m.needsUpdate = true;
   }
 
+  // Baut (und entsorgt) die 6 Materialien anhand Text+Farbe
+  function baueMaterialien(
+    alteMaterialien,
+    texte,
+    farben,
+    seiteZuMaterialIndex
+  ) {
+    if (Array.isArray(alteMaterialien) && alteMaterialien.length) {
+      alteMaterialien.forEach((m) => {
+        if (!m) return;
+        if (m.map) m.map.dispose();
+        m.dispose();
+      });
+    }
+    const mats = new Array(6);
+    for (let seite = 0; seite < 6; seite++) {
+      const mi = seiteZuMaterialIndex[seite];
+      mats[mi] = new DREI.MeshBasicMaterial({
+        map: erzeugeTextTextur(texte[seite], farben[seite]),
+      });
+    }
+    return mats;
+  }
+
+  // Bestimmt Index der nach oben gerichteten Fläche
+  function ermittleOberesMaterialIndex(quaternion, flaechenNormalen) {
+    let bestIdx = 2;
+    let bestDot = -Infinity;
+    const oben = new DREI.Vector3(0, 1, 0);
+    for (let i = 0; i < 6; i++) {
+      const weltNormal = flaechenNormalen[i]
+        .clone()
+        .applyQuaternion(quaternion);
+      const punkt = weltNormal.dot(oben);
+      if (punkt > bestDot) {
+        bestDot = punkt;
+        bestIdx = i;
+      }
+    }
+    return bestIdx;
+  }
+
+  // Quaternion, das eine Fläche nach oben bringt; drehViertel rotiert um Y
+  function quaternionFuerObereFlaeche(
+    materialIndex,
+    drehViertel,
+    flaechenNormalen
+  ) {
+    const von = flaechenNormalen[materialIndex];
+    const zu = new DREI.Vector3(0, 1, 0);
+    const ausrichten = new DREI.Quaternion().setFromUnitVectors(von, zu);
+    const gieren = new DREI.Quaternion().setFromAxisAngle(
+      new DREI.Vector3(0, 1, 0),
+      (Math.PI / 2) * (drehViertel % 4)
+    );
+    return gieren.multiply(ausrichten);
+  }
+
+  // Wählt 0..3 Vierteldrehungen für lesbare Textausrichtung
+  function waehleGierFuerLesbarkeit(
+    materialIndex,
+    flaechenNormalen,
+    textObenRichtung,
+    kamera
+  ) {
+    let besteViertel = 0;
+    let besteBewertung = -Infinity;
+    const zentrumLokal = flaechenNormalen[materialIndex]
+      .clone()
+      .multiplyScalar(1.0);
+    for (let k = 0; k < 4; k++) {
+      const q = quaternionFuerObereFlaeche(materialIndex, k, flaechenNormalen);
+      const obenLokal = textObenRichtung[materialIndex];
+      const zentrumWelt = zentrumLokal.clone().applyQuaternion(q);
+      const obenWelt = obenLokal.clone().applyQuaternion(q).normalize();
+      const p0 = zentrumWelt.clone();
+      const p1 = zentrumWelt.clone().add(obenWelt.clone().multiplyScalar(0.5));
+      const p0N = p0.clone().project(kamera);
+      const p1N = p1.clone().project(kamera);
+      const dx = p1N.x - p0N.x;
+      const dy = p1N.y - p0N.y;
+      const bewertung = dy - Math.abs(dx) * 0.25;
+      if (bewertung > besteBewertung) {
+        besteBewertung = bewertung;
+        besteViertel = k;
+      }
+    }
+    return besteViertel;
+  }
+
+  // Positioniert Markierung über aktueller Oberseite; gibt deren Index zurück
+  function aktualisiereMarkierung(
+    markierung,
+    wuerfelQuaternion,
+    flaechenNormalen
+  ) {
+    const topIdx = ermittleOberesMaterialIndex(
+      wuerfelQuaternion,
+      flaechenNormalen
+    );
+    const lokaleNormale = flaechenNormalen[topIdx];
+    const pos = lokaleNormale.clone().multiplyScalar(1.02);
+    markierung.position.copy(pos);
+    const q = new DREI.Quaternion().setFromUnitVectors(
+      new DREI.Vector3(0, 0, 1),
+      lokaleNormale
+    );
+    markierung.quaternion.copy(q);
+    return topIdx;
+  }
+
+  // Hinweis anzeigen/verbergen
+  function hinweis(nachricht, verstecken, elementId = "hinweis") {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    if (verstecken) {
+      el.textContent = "";
+      return;
+    }
+    el.textContent = nachricht;
+  }
+
+  // Renderer/Kamera ans Canvas anpassen
+  function passeRendererAnAnzeigeAn(renderer, kamera, leinwandElement) {
+    const rect = leinwandElement.getBoundingClientRect();
+    const breite = Math.floor(rect.width);
+    const hoehe = Math.floor(rect.height);
+    const mussAnpassen =
+      leinwandElement.width !== breite || leinwandElement.height !== hoehe;
+    if (mussAnpassen) {
+      renderer.setSize(breite, hoehe, false);
+      kamera.aspect = breite / hoehe;
+      kamera.updateProjectionMatrix();
+    }
+    return mussAnpassen;
+  }
+
+  // Input-Handler für Texte/Farben
+  function onSeiteTextInput(
+    index,
+    e,
+    seitenTexte,
+    seitenFarben,
+    materialien,
+    seiteZuMaterialIndex
+  ) {
+    seitenTexte[index] = e.target.value;
+    updateMaterialTexture(
+      index,
+      seitenTexte,
+      seitenFarben,
+      materialien,
+      seiteZuMaterialIndex
+    );
+  }
+
+  function onSeiteFarbeInput(
+    index,
+    e,
+    seitenTexte,
+    seitenFarben,
+    materialien,
+    seiteZuMaterialIndex
+  ) {
+    seitenFarben[index] = e.target.value;
+    updateMaterialTexture(
+      index,
+      seitenTexte,
+      seitenFarben,
+      materialien,
+      seiteZuMaterialIndex
+    );
+  }
+
   window.Helpers = {
     ermittleTextFarbe,
     erzeugeTextTextur,
     updateMaterialTexture,
+    baueMaterialien,
+    ermittleOberesMaterialIndex,
+    quaternionFuerObereFlaeche,
+    waehleGierFuerLesbarkeit,
+    aktualisiereMarkierung,
+    hinweis,
+    passeRendererAnAnzeigeAn,
+    onSeiteTextInput,
+    onSeiteFarbeInput,
   };
 })();

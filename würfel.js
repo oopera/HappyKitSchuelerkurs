@@ -49,7 +49,7 @@
   let animation = null;
 
   // true = neue, gedämpfte Rotation; false = alte, zeitbasierte Animation
-  const PhysikbasierteAnimation = true;
+  const PhysikbasierteAnimation = false;
 
   // MATERIAL ORDER FÜR BOXGEOMETRY: [ +x, -x, +y, -y, +z, -z ]
   const seiteZuMaterialIndex = [2, 0, 4, 5, 1, 3];
@@ -99,23 +99,14 @@
   const wuerfelGruppe = new DREI.Group();
   szene.add(wuerfelGruppe);
 
-  // Erzeugt Materialien aus Text+Farbe; entsorgt alte Texturen/Materialien
+  // Materialien mit Helper erzeugen
   function baueMaterialien(texte, farben) {
-    if (materialien.length) {
-      materialien.forEach((m) => {
-        if (!m) return;
-        if (m.map) m.map.dispose();
-        m.dispose();
-      });
-    }
-    const mats = new Array(6);
-    for (let seite = 0; seite < 6; seite++) {
-      const mi = seiteZuMaterialIndex[seite];
-      mats[mi] = new DREI.MeshBasicMaterial({
-        map: Helpers.erzeugeTextTextur(texte[seite], farben[seite]),
-      });
-    }
-    materialien = mats;
+    materialien = Helpers.baueMaterialien(
+      materialien,
+      texte,
+      farben,
+      seiteZuMaterialIndex
+    );
     if (wuerfel) wuerfel.material = materialien;
   }
 
@@ -155,22 +146,26 @@
 
   // Text geändert: Textur der betreffenden Seite neu rendern
   function onSeiteTextInput(index, e) {
-    seitenTexte[index] = e.target.value;
-    const mi = seiteZuMaterialIndex[index];
-    const m = materialien[mi];
-    if (m && m.map) m.map.dispose();
-    m.map = Helpers.erzeugeTextTextur(seitenTexte[index], seitenFarben[index]);
-    m.needsUpdate = true;
+    Helpers.onSeiteTextInput(
+      index,
+      e,
+      seitenTexte,
+      seitenFarben,
+      materialien,
+      seiteZuMaterialIndex
+    );
   }
 
   // Farbe geändert: Textur der betreffenden Seite neu rendern
   function onSeiteFarbeInput(index, e) {
-    seitenFarben[index] = e.target.value;
-    const mi = seiteZuMaterialIndex[index];
-    const m = materialien[mi];
-    if (m && m.map) m.map.dispose();
-    m.map = Helpers.erzeugeTextTextur(seitenTexte[index], seitenFarben[index]);
-    m.needsUpdate = true;
+    Helpers.onSeiteFarbeInput(
+      index,
+      e,
+      seitenTexte,
+      seitenFarben,
+      materialien,
+      seiteZuMaterialIndex
+    );
   }
 
   // const t1 = document.getElementById("seiteText1");
@@ -210,71 +205,38 @@
 
   // Bestimmt die aktuell nach oben gerichtete Fläche (Materialindex 0..5)
   function ermittleOberesMaterialIndex() {
-    const q = wuerfel.quaternion;
-    let bestIdx = 2;
-    let bestDot = -Infinity;
-    const oben = new DREI.Vector3(0, 1, 0);
-    for (let i = 0; i < 6; i++) {
-      const weltNormal = flaechenNormalen[i].clone().applyQuaternion(q);
-      const punkt = weltNormal.dot(oben);
-      if (punkt > bestDot) {
-        bestDot = punkt;
-        bestIdx = i;
-      }
-    }
-    return bestIdx;
+    return Helpers.ermittleOberesMaterialIndex(
+      wuerfel.quaternion,
+      flaechenNormalen
+    );
   }
 
   // Orientierung, die eine gegebene Fläche nach oben bringt; drehViertel rotiert um Y
   function quaternionFuerObereFlaeche(materialIndex, drehViertel) {
-    const von = flaechenNormalen[materialIndex];
-    const zu = new DREI.Vector3(0, 1, 0);
-    const ausrichten = new DREI.Quaternion().setFromUnitVectors(von, zu);
-    const gieren = new DREI.Quaternion().setFromAxisAngle(
-      new DREI.Vector3(0, 1, 0),
-      (Math.PI / 2) * (drehViertel % 4)
+    return Helpers.quaternionFuerObereFlaeche(
+      materialIndex,
+      drehViertel,
+      flaechenNormalen
     );
-    return gieren.multiply(ausrichten);
   }
 
   // Wählt 0..3 Vierteldrehungen für bestmögliche Lesbarkeit der Textausrichtung
   function waehleGierFuerLesbarkeit(materialIndex) {
-    let besteViertel = 0;
-    let besteBewertung = -Infinity;
-    const zentrumLokal = flaechenNormalen[materialIndex]
-      .clone()
-      .multiplyScalar(1.0);
-    for (let k = 0; k < 4; k++) {
-      const q = quaternionFuerObereFlaeche(materialIndex, k);
-      const obenLokal = textObenRichtung[materialIndex];
-      const zentrumWelt = zentrumLokal.clone().applyQuaternion(q);
-      const obenWelt = obenLokal.clone().applyQuaternion(q).normalize();
-      const p0 = zentrumWelt.clone();
-      const p1 = zentrumWelt.clone().add(obenWelt.clone().multiplyScalar(0.5));
-      const p0N = p0.clone().project(kamera);
-      const p1N = p1.clone().project(kamera);
-      const dx = p1N.x - p0N.x;
-      const dy = p1N.y - p0N.y;
-      const bewertung = dy - Math.abs(dx) * 0.25;
-      if (bewertung > besteBewertung) {
-        besteBewertung = bewertung;
-        besteViertel = k;
-      }
-    }
-    return besteViertel;
+    return Helpers.waehleGierFuerLesbarkeit(
+      materialIndex,
+      flaechenNormalen,
+      textObenRichtung,
+      kamera
+    );
   }
 
   // Positioniert die Markierung über der oberen Fläche
   function aktualisiereMarkierung() {
-    const topIdx = ermittleOberesMaterialIndex();
-    const lokaleNormale = flaechenNormalen[topIdx];
-    const pos = lokaleNormale.clone().multiplyScalar(1.02);
-    markierung.position.copy(pos);
-    const q = new DREI.Quaternion().setFromUnitVectors(
-      new DREI.Vector3(0, 0, 1),
-      lokaleNormale
+    Helpers.aktualisiereMarkierung(
+      markierung,
+      wuerfel.quaternion,
+      flaechenNormalen
     );
-    markierung.quaternion.copy(q);
   }
 
   // Neue Animation mit zufälliger Achse und Dämpfung ("physikalischer")
@@ -323,14 +285,7 @@
 
   // Anzeigeelement unter dem Würfel ein-/ausblenden und Text setzen
   function hinweis(nachricht, verstecken) {
-    const el = document.getElementById("hinweis");
-    if (verstecken) {
-      el.style.display = "none";
-      el.textContent = "";
-      return;
-    }
-    el.textContent = nachricht;
-    el.style.display = "block";
+    Helpers.hinweis(nachricht, verstecken, "hinweis");
   }
 
   // ELEMENT FÜR DEN WÜRFEL
@@ -338,17 +293,7 @@
 
   // Passt Renderergröße und Kamera an die aktuelle Canvasgröße an
   function passeRendererAnAnzeigeAn() {
-    const rect = leinwandElement.getBoundingClientRect();
-    const breite = Math.floor(rect.width);
-    const hoehe = Math.floor(rect.height);
-    const mussAnpassen =
-      leinwandElement.width !== breite || leinwandElement.height !== hoehe;
-    if (mussAnpassen) {
-      renderer.setSize(breite, hoehe, false);
-      kamera.aspect = breite / hoehe;
-      kamera.updateProjectionMatrix();
-    }
-    return mussAnpassen;
+    return Helpers.passeRendererAnAnzeigeAn(renderer, kamera, leinwandElement);
   }
 
   // Render-Loop: Größe anpassen, Markierung/Animation aktualisieren, Szene rendern
