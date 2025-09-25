@@ -48,6 +48,14 @@
           app.wuerfeln();
         });
       }
+
+      var physToggle = document.getElementById("");
+      if (physToggle) {
+        physToggle.checked = app.getPhysikbasiert();
+        physToggle.addEventListener("change", function (e) {
+          app.setPhysikbasiert(!!e.target.checked);
+        });
+      }
     }
 
     if (document.readyState === "loading") {
@@ -66,31 +74,35 @@
     <div class="bereich">
       <div class="steuerung" id="steuerung">
         <div class="eingabe-container">
-          <label for="seiteText1">Seite 1</label>
-          <input id="seiteText1" type="text" />
+          <!-- TODO CHECKBOX PHYSIK -->
         </div>
         <div class="eingabe-container">
-          <label for="seiteText2">Seite 2</label>
-          <input id="seiteText2" type="text" />
+          <!-- TODO TEXT SEITE 1 -->
+          <!-- TODO FARBE SEITE 1 -->
         </div>
         <div class="eingabe-container">
-          <label for="seiteText3">Seite 3</label>
-          <input id="seiteText3" type="text" />
+          <!-- TODO TEXT SEITE 2 -->
+          <!-- TODO FARBE SEITE 2 -->
         </div>
         <div class="eingabe-container">
-          <label for="seiteText4">Seite 4</label>
-          <input id="seiteText4" type="text" />
+          <!-- TODO TEXT SEITE 3 -->
+          <!-- TODO FARBE SEITE 3 -->
         </div>
         <div class="eingabe-container">
-          <label for="seiteText5">Seite 5</label>
-          <input id="seiteText5" type="text" />
+          <!-- TODO TEXT SEITE 4 -->
+          <!-- TODO FARBE SEITE 4 -->
         </div>
         <div class="eingabe-container">
-          <label for="seiteText6">Seite 6</label>
-          <input id="seiteText6" type="text" />
+          <!-- TODO TEXT SEITE 5 -->
+          <!-- TODO FARBE SEITE 5 -->
+        </div>
+        <div class="eingabe-container">
+          <!-- TODO TEXT SEITE 6 -->
+          <!-- TODO FARBE SEITE 6 -->
         </div>
       </div>
-      <button id="wuerfelButton">Würfel rollen</button>
+
+      <!-- TODO BUTTON WÜRFEL -->
     </div>
     <div class="bereich anzeige">
       <canvas id="szene"></canvas>

@@ -9,7 +9,7 @@
     const opts = options || {};
     const canvasId = opts.canvasId || "szene";
     const hinweisId = opts.hinweisId || "hinweis";
-    const PhysikbasierteAnimation = !!opts.physikbasiert;
+    let physikbasiert = !!opts.physikbasiert;
 
     // Hilfsfunktionen (lokal, nicht global)
     function ermittleTextFarbe(hintergrundHex) {
@@ -320,7 +320,7 @@
     }
 
     function wuerfeln() {
-      if (PhysikbasierteAnimation) {
+      if (physikbasiert) {
         physischesWuerfeln();
         return;
       }
@@ -363,7 +363,7 @@
       if (animation) {
         const jetzt = performance.now();
         if (animation.phase === 0) {
-          if (PhysikbasierteAnimation) {
+          if (physikbasiert) {
             const dt = Math.min(0.05, (jetzt - animation.letzteZeit) / 1000);
             animation.letzteZeit = jetzt;
             const omega = animation.winkelgeschwindigkeit;
@@ -460,6 +460,12 @@
       setText,
       setFarbe,
       wuerfeln,
+      setPhysikbasiert: function (flag) {
+        physikbasiert = !!flag;
+      },
+      getPhysikbasiert: function () {
+        return !!physikbasiert;
+      },
     };
   }
 
