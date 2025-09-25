@@ -15,22 +15,9 @@
         physikbasiert: false,
       });
 
-      const textIds = [
-        "seiteText1",
-        "seiteText2",
-        "seiteText3",
-        "seiteText4",
-        "seiteText5",
-        "seiteText6",
-      ];
-      const farbIds = [
-        "seiteFarbe1",
-        "seiteFarbe2",
-        "seiteFarbe3",
-        "seiteFarbe4",
-        "seiteFarbe5",
-        "seiteFarbe6",
-      ];
+      const textIds = [];
+      const farbIds = [];
+      var button = document.getElementById("");
 
       const aktuelleTexte = app.getSeitenTexte();
       const aktuelleFarben = app.getSeitenFarben();
@@ -56,7 +43,6 @@
         }
       }
 
-      var button = document.getElementById("wuerfelButton");
       if (button) {
         button.addEventListener("click", function () {
           app.wuerfeln();
@@ -80,25 +66,31 @@
     <div class="bereich">
       <div class="steuerung" id="steuerung">
         <div class="eingabe-container">
-          <!-- TODO IMPLEMENTIEREN -->
+          <label for="seiteText1">Seite 1</label>
+          <input id="seiteText1" type="text" />
         </div>
         <div class="eingabe-container">
-          <!-- TODO IMPLEMENTIEREN -->
+          <label for="seiteText2">Seite 2</label>
+          <input id="seiteText2" type="text" />
         </div>
         <div class="eingabe-container">
-          <!-- TODO IMPLEMENTIEREN -->
+          <label for="seiteText3">Seite 3</label>
+          <input id="seiteText3" type="text" />
         </div>
         <div class="eingabe-container">
-          <!-- TODO IMPLEMENTIEREN -->
+          <label for="seiteText4">Seite 4</label>
+          <input id="seiteText4" type="text" />
         </div>
         <div class="eingabe-container">
-          <!-- TODO IMPLEMENTIEREN -->
+          <label for="seiteText5">Seite 5</label>
+          <input id="seiteText5" type="text" />
         </div>
         <div class="eingabe-container">
-          <!-- TODO IMPLEMENTIEREN -->
+          <label for="seiteText6">Seite 6</label>
+          <input id="seiteText6" type="text" />
         </div>
       </div>
-      <!-- BUTTON-->
+      <button id="wuerfelButton">Würfel rollen</button>
     </div>
     <div class="bereich anzeige">
       <canvas id="szene"></canvas>
