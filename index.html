@@ -15,47 +15,52 @@
         physikbasiert: false,
       });
 
-      const textIds = [];
-      const farbIds = [];
-      var button = document.getElementById("");
+      const textIds = [
+        "textSeite1",
+        "textSeite2",
+        "textSeite3",
+        "textSeite4",
+        "textSeite5",
+        "textSeite6",
+        // TODO NAMEN EUREN SEITEN TEXT IDs
+      ];
+      const farbIds = [
+        // TODO NAMEN EUREN SEITEN FARBE IDs
+      ];
 
       const aktuelleTexte = app.getSeitenTexte();
       const aktuelleFarben = app.getSeitenFarben();
 
+      const setTextEventListener = (index) => {
+        var textInput = document.getElementById(textIds[index]);
+        if (textInput) {
+          textInput.addEventListener("input", function (e) {
+            app.setText(index, e.target.value);
+          });
+        }
+      };
+
+      const setFarbeEventListener = (index) => {
+        var farbeInput = document.getElementById(farbIds[index]);
+        if (farbeInput) {
+          farbeInput.addEventListener("input", function (e) {
+            app.setFarbe(index, e.target.value);
+          });
+        }
+      };
+
       for (var i = 0; i < 6; i++) {
-        var ti = document.getElementById(textIds[i]);
-        if (ti) {
-          ti.value = aktuelleTexte[i];
-          (function (index) {
-            ti.addEventListener("input", function (e) {
-              app.setText(index, e.target.value);
-            });
-          })(i);
+        var textInput = document.getElementById(textIds[i]);
+        if (textInput) {
+          // TODO SET TEXT EVENT LISTENER
         }
-        var fi = document.getElementById(farbIds[i]);
-        if (fi) {
-          fi.value = aktuelleFarben[i];
-          (function (index) {
-            fi.addEventListener("input", function (e) {
-              app.setFarbe(index, e.target.value);
-            });
-          })(i);
+        var farbeInput = document.getElementById(farbIds[i]);
+        if (farbeInput) {
+          // TODO SET FARBE EVENT LISTENER
         }
       }
 
-      if (button) {
-        button.addEventListener("click", function () {
-          app.wuerfeln();
-        });
-      }
-
-      var physToggle = document.getElementById("");
-      if (physToggle) {
-        physToggle.checked = app.getPhysikbasiert();
-        physToggle.addEventListener("change", function (e) {
-          app.setPhysikbasiert(!!e.target.checked);
-        });
-      }
+      var button = document.getElementById("");
     }
 
     if (document.readyState === "loading") {
@@ -73,30 +78,35 @@
   <main>
     <div class="bereich">
       <div class="steuerung" id="steuerung">
+        <p>Hier müsst ihr die Steuerung für den Würfel einbauen.</p>
         <div class="eingabe-container">
           <!-- TODO CHECKBOX PHYSIK -->
         </div>
         <div class="eingabe-container">
-          <!-- TODO TEXT SEITE 1 -->
-          <!-- TODO FARBE SEITE 1 -->
+          <input type="text" id="textSeite1" />
         </div>
         <div class="eingabe-container">
+          <input type="text" id="textSeite2" />
           <!-- TODO TEXT SEITE 2 -->
           <!-- TODO FARBE SEITE 2 -->
         </div>
         <div class="eingabe-container">
+          <input type="text" id="textSeite3" />
           <!-- TODO TEXT SEITE 3 -->
           <!-- TODO FARBE SEITE 3 -->
         </div>
         <div class="eingabe-container">
+          <input type="text" id="textSeite4" />
           <!-- TODO TEXT SEITE 4 -->
           <!-- TODO FARBE SEITE 4 -->
         </div>
         <div class="eingabe-container">
+          <input type="text" id="textSeite5" />
           <!-- TODO TEXT SEITE 5 -->
           <!-- TODO FARBE SEITE 5 -->
         </div>
         <div class="eingabe-container">
+          <input type="text" id="textSeite6" />
           <!-- TODO TEXT SEITE 6 -->
           <!-- TODO FARBE SEITE 6 -->
         </div>

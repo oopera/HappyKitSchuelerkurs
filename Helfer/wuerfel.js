@@ -342,14 +342,21 @@
     }
 
     function passeRendererAnAnzeigeAn() {
-      const rect = leinwandElement.getBoundingClientRect();
-      const breite = Math.floor(rect.width);
-      const hoehe = Math.floor(rect.height);
+      const cssBreite = leinwandElement.clientWidth | 0;
+      const cssHoehe = leinwandElement.clientHeight | 0;
+      const dpr = renderer.getPixelRatio
+        ? renderer.getPixelRatio()
+        : window.devicePixelRatio || 1;
+      const zielPixelBreite = (cssBreite * dpr) | 0;
+      const zielPixelHoehe = (cssHoehe * dpr) | 0;
       const mussAnpassen =
-        leinwandElement.width !== breite || leinwandElement.height !== hoehe;
+        renderer.domElement.width !== zielPixelBreite ||
+        renderer.domElement.height !== zielPixelHoehe;
       if (mussAnpassen) {
-        renderer.setSize(breite, hoehe, false);
-        kamera.aspect = breite / hoehe;
+        const safeBreite = Math.max(1, cssBreite);
+        const safeHoehe = Math.max(1, cssHoehe);
+        renderer.setSize(safeBreite, safeHoehe, false);
+        kamera.aspect = safeBreite / safeHoehe;
         kamera.updateProjectionMatrix();
       }
       return mussAnpassen;
