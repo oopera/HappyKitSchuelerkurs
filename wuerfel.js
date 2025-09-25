@@ -122,28 +122,6 @@
   const seitenTexte = standardSeitenTexte.slice();
   const seitenFarben = standardSeitenFarben.slice();
 
-  const textEingaebe = [
-    document.getElementById("seiteText1"),
-    document.getElementById("seiteText2"),
-    document.getElementById("seiteText3"),
-    document.getElementById("seiteText4"),
-    document.getElementById("seiteText5"),
-    document.getElementById("seiteText6"),
-  ];
-  const farbEingaebe = [
-    document.getElementById("seiteFarbe1"),
-    document.getElementById("seiteFarbe2"),
-    document.getElementById("seiteFarbe3"),
-    document.getElementById("seiteFarbe4"),
-    document.getElementById("seiteFarbe5"),
-    document.getElementById("seiteFarbe6"),
-  ];
-
-  for (let i = 0; i < 6; i++) {
-    if (textEingaebe[i]) textEingaebe[i].value = seitenTexte[i];
-    if (farbEingaebe[i]) farbEingaebe[i].value = seitenFarben[i];
-  }
-
   // Text geändert: Textur der betreffenden Seite neu rendern
   function onSeiteTextInput(index, e) {
     Helpers.onSeiteTextInput(
@@ -253,6 +231,40 @@
   // Anzeigeelement unter dem Würfel ein-/ausblenden und Text setzen
   function hinweis(nachricht, verstecken) {
     Helpers.hinweis(nachricht, verstecken, "hinweis");
+  }
+
+  const textEingaebe = [
+    document.getElementById("seiteText1"),
+    document.getElementById("seiteText2"),
+    document.getElementById("seiteText3"),
+    document.getElementById("seiteText4"),
+    document.getElementById("seiteText5"),
+    document.getElementById("seiteText6"),
+  ];
+  const farbEingaebe = [
+    document.getElementById("seiteFarbe1"),
+    document.getElementById("seiteFarbe2"),
+    document.getElementById("seiteFarbe3"),
+    document.getElementById("seiteFarbe4"),
+    document.getElementById("seiteFarbe5"),
+    document.getElementById("seiteFarbe6"),
+  ];
+
+  const wuerfelButton = document.getElementById("wuerfelButton");
+
+  for (let i = 0; i < 6; i++) {
+    if (textEingaebe[i]) {
+      textEingaebe[i].value = seitenTexte[i];
+      textEingaebe[i].addEventListener("input", (e) => onSeiteTextInput(i, e));
+    }
+    if (farbEingaebe[i]) {
+      farbEingaebe[i].value = seitenFarben[i];
+      farbEingaebe[i].addEventListener("input", (e) => onSeiteFarbeInput(i, e));
+    }
+  }
+
+  if (wuerfelButton) {
+    wuerfelButton.addEventListener("click", wuerfeln);
   }
 
   // Verdrahtet Inputs (Texte/Farben) mit den Handlern
