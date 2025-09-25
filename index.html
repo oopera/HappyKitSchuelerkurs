@@ -26,11 +26,13 @@
       background: #ffffff;
       border: 1px solid #e5e7eb;
     }
+
     footer {
       padding: 16px;
       background: #ffffff;
       border: 1px solid #e5e7eb;
     }
+
     h1 {
       margin: 0;
       font-size: 16px;
@@ -41,11 +43,24 @@
       font-weight: 400;
       color: #6b7280;
     }
+
     p {
       margin: 0;
       font-size: 12px;
       font-weight: 400;
       color: #6b7280;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
     }
 
     .bereich {
@@ -70,28 +85,6 @@
       gap: 8px;
     }
 
-    button {
-      padding: 10px 12px;
-      border: 1px solid #d1d5db;
-      border-radius: 6px;
-      background: #111827;
-      color: white;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    canvas {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
     .hinweis {
       display: flex;
       justify-content: center;
@@ -103,10 +96,14 @@
       border-radius: 6px;
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
     }
+
+    /* BUTTON STYLING */
+    /* INPUT STYLING */
+    /* TODO  */
   </style>
   <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
   <script src="./helfer.js"></script>
-  <script defer src="./würfel.js"></script>
+  <script defer src="./wuerfel.js"></script>
 </head>
 
 <body>
@@ -117,31 +114,25 @@
     <div class="bereich">
       <div class="steuerung" id="steuerung">
         <div class="eingabe-container">
-          <input type="text" id="seiteText1" placeholder="Text für Seite 1" />
-          <input type="color" id="seiteFarbe1" />
+          <!-- TODO IMPLEMENTIEREN -->
         </div>
         <div class="eingabe-container">
-          <input type="text" id="seiteText2" placeholder="Text für Seite 2" />
-          <input type="color" id="seiteFarbe2" />
+          <!-- TODO IMPLEMENTIEREN -->
         </div>
         <div class="eingabe-container">
-          <input type="text" id="seiteText3" placeholder="Text für Seite 3" />
-          <input type="color" id="seiteFarbe3" />
+          <!-- TODO IMPLEMENTIEREN -->
         </div>
         <div class="eingabe-container">
-          <input type="text" id="seiteText4" placeholder="Text für Seite 4" />
-          <input type="color" id="seiteFarbe4" />
+          <!-- TODO IMPLEMENTIEREN -->
         </div>
         <div class="eingabe-container">
-          <input type="text" id="seiteText5" placeholder="Text für Seite 5" />
-          <input type="color" id="seiteFarbe5" />
+          <!-- TODO IMPLEMENTIEREN -->
         </div>
         <div class="eingabe-container">
-          <input type="text" id="seiteText6" placeholder="Text für Seite 6" />
-          <input type="color" id="seiteFarbe6" />
+          <!-- TODO IMPLEMENTIEREN -->
         </div>
       </div>
-      <button id="wuerfelButton">Würfel rollen</button>
+      <!-- BUTTON-->
     </div>
     <div class="bereich anzeige">
       <canvas id="szene"></canvas>

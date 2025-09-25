@@ -137,13 +137,6 @@ startBtn.addEventListener("click", () => {
 - Lies die Werte aus den Inputs aus
 - Reagiere auf Klick (oder Form-Submit) und führe eine Aktion aus
 - Aktualisiere den DOM (z. B. Text ändern, Elemente ein-/ausblenden)
-- Bonus: Validierung (z. B. nur positive Zahlen zulassen)
-
-4. Bonus-Ideen
-
-- Speichere Einstellungen im `localStorage`
-- Erzeuge dynamisch neue Elemente (z. B. Ergebnisliste)
-- Nutze einfache Animationen (CSS-Transitions oder JS-Klassen toggeln)
 
 ## Debugging-Tipps
 

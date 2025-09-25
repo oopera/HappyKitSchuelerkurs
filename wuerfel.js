@@ -257,35 +257,7 @@
 
   // Verdrahtet Inputs (Texte/Farben) mit den Handlern
   function verbindeSteuerung() {
-    const t1 = document.getElementById("seiteText1");
-    if (t1) t1.addEventListener("input", (e) => onSeiteTextInput(0, e));
-    const t2 = document.getElementById("seiteText2");
-    if (t2) t2.addEventListener("input", (e) => onSeiteTextInput(1, e));
-    const t3 = document.getElementById("seiteText3");
-    if (t3) t3.addEventListener("input", (e) => onSeiteTextInput(2, e));
-    const t4 = document.getElementById("seiteText4");
-    if (t4) t4.addEventListener("input", (e) => onSeiteTextInput(3, e));
-    const t5 = document.getElementById("seiteText5");
-    if (t5) t5.addEventListener("input", (e) => onSeiteTextInput(4, e));
-    const t6 = document.getElementById("seiteText6");
-    if (t6) t6.addEventListener("input", (e) => onSeiteTextInput(5, e));
-
-    const f1 = document.getElementById("seiteFarbe1");
-    if (f1) f1.addEventListener("input", (e) => onSeiteFarbeInput(0, e));
-    const f2 = document.getElementById("seiteFarbe2");
-    if (f2) f2.addEventListener("input", (e) => onSeiteFarbeInput(1, e));
-    const f3 = document.getElementById("seiteFarbe3");
-    if (f3) f3.addEventListener("input", (e) => onSeiteFarbeInput(2, e));
-    const f4 = document.getElementById("seiteFarbe4");
-    if (f4) f4.addEventListener("input", (e) => onSeiteFarbeInput(3, e));
-    const f5 = document.getElementById("seiteFarbe5");
-    if (f5) f5.addEventListener("input", (e) => onSeiteFarbeInput(4, e));
-    const f6 = document.getElementById("seiteFarbe6");
-    if (f6) f6.addEventListener("input", (e) => onSeiteFarbeInput(5, e));
-
-    document
-      .getElementById("wuerfelButton")
-      .addEventListener("click", wuerfeln);
+    // TODO IMPLEMENTIEREN
   }
 
   verbindeSteuerung();
