@@ -1,12 +1,8 @@
 <head>
-  <style>
-    /* BUTTON STYLING */
-    /* INPUT STYLING */
-    /* TODO  */
-  </style>
   <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
   <script src="./Helfer/wuerfel.js"></script>
   <link rel="stylesheet" href="./Helfer/style.css" />
+  <!-- TODO STYLE CSS -->
   <script>
     function verbindeSteuerung() {
       const app = WuerfelApp({
@@ -17,11 +13,6 @@
 
       const textIds = [
         "textSeite1",
-        "textSeite2",
-        "textSeite3",
-        "textSeite4",
-        "textSeite5",
-        "textSeite6",
         // TODO NAMEN EUREN SEITEN TEXT IDs
       ];
       const farbIds = [
@@ -49,18 +40,24 @@
         }
       };
 
-      for (var i = 0; i < 6; i++) {
-        var textInput = document.getElementById(textIds[i]);
+      for (var index = 0; index < 6; index++) {
+        var textInput = document.getElementById(textIds[index]);
         if (textInput) {
           // TODO SET TEXT EVENT LISTENER
         }
-        var farbeInput = document.getElementById(farbIds[i]);
+        var farbeInput = document.getElementById(farbIds[index]);
         if (farbeInput) {
           // TODO SET FARBE EVENT LISTENER
         }
       }
 
       var button = document.getElementById("");
+
+      if (button) {
+        button.addEventListener("click", function () {
+          app.wuerfeln();
+        });
+      }
     }
 
     if (document.readyState === "loading") {
@@ -69,6 +66,10 @@
       verbindeSteuerung();
     }
   </script>
+  <style>
+    /* BUTTON STYLING */
+    /* INPUT STYLING */
+  </style>
 </head>
 
 <body>
@@ -83,35 +84,30 @@
           <!-- TODO CHECKBOX PHYSIK -->
         </div>
         <div class="eingabe-container">
-          <input type="text" id="textSeite1" />
+          <!-- TODO TEXT SEITE 1 -->
+          <!-- TODO FARBE SEITE 1 -->
         </div>
         <div class="eingabe-container">
-          <input type="text" id="textSeite2" />
           <!-- TODO TEXT SEITE 2 -->
           <!-- TODO FARBE SEITE 2 -->
         </div>
         <div class="eingabe-container">
-          <input type="text" id="textSeite3" />
           <!-- TODO TEXT SEITE 3 -->
           <!-- TODO FARBE SEITE 3 -->
         </div>
         <div class="eingabe-container">
-          <input type="text" id="textSeite4" />
           <!-- TODO TEXT SEITE 4 -->
           <!-- TODO FARBE SEITE 4 -->
         </div>
         <div class="eingabe-container">
-          <input type="text" id="textSeite5" />
           <!-- TODO TEXT SEITE 5 -->
           <!-- TODO FARBE SEITE 5 -->
         </div>
         <div class="eingabe-container">
-          <input type="text" id="textSeite6" />
           <!-- TODO TEXT SEITE 6 -->
           <!-- TODO FARBE SEITE 6 -->
         </div>
       </div>
-
       <!-- TODO BUTTON WÜRFEL -->
     </div>
     <div class="bereich anzeige">
