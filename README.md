@@ -1,183 +1,146 @@
-# HappyKit Schülerkurs – Grundlagen der Webentwicklung
+# HappyKit Schülerkurs – 60‑Minuten Workshop: Websites mit HTML, CSS & JS
 
-Willkommen! In diesem Projekt bekommen Schüler:innen einen praktischen Einstieg in die Webentwicklung: HTML für Struktur, CSS für Design und JavaScript für Interaktivität. Außerdem klären wir kurz, was Browser und Server tun. Zum Schluss sprechen wir über 3D-Programmierung und den Unterschied zwischen physikbasierten und nicht-physikbasierten Ansätzen.
+Kurz und praxisnah: In 1 Stunde bauen die Schüler:innen einen interaktiven 3D‑„Prompt‑Würfel“. Sie erstellen HTML‑Inputs, stylen sie mit CSS und verbinden alles per JavaScript, damit Texte/Farben der sechs Würfelseiten live gesteuert und per Button „gewürfelt“ werden können.
 
-## Lernziele
+## Vorbereitung (2 Min)
 
-- Verstehen, wie HTML, CSS und JavaScript zusammenarbeiten
-- Eigene HTML-Eingaben (Inputs) erstellen
-- Elemente mit CSS gestalten (Layout, Farben, Responsiveness)
-- Inputs mit JavaScript auslesen und den DOM verändern
-- Grundidee von Browser vs. Server
-- Überblick: 3D im Web, physikbasiert vs. nicht-physikbasiert
+- Öffne `index.html` direkt im Browser (Doppelklick) oder mit Live Server.
+- Relevante Dateien:
+  - `index.html` – Seite, Aufgaben und Script‑Hook `verbindeSteuerung()`
+  - `Helfer/style.css` – Basis‑Styles
+  - `Helfer/wuerfel.js` – 3D‑Logik (Three.js), App‑API: `WuerfelApp(...)`
 
-## Projekt starten
+## Lernziele (1 Min)
 
-- Öffne `index.html` im Browser (Doppelklick) oder nutze eine Live-Server-Erweiterung in deinem Editor.
-- Der Code liegt hier:
-  - `index.html` – Startseite/Struktur
-  - `würfel.js` – Beispiel-Logik (JavaScript)
+- HTML: Inputs anlegen und sinnvoll benennen
+- CSS: Inputs und Button ansprechend gestalten
+- JS: DOM‑Elemente holen, Events verknüpfen, App‑API nutzen
+- Browser vs. Server: Hier läuft alles lokal im Browser
 
-## Was machen Browser und Server?
+## Ablauf / Zeitplan (ca. 60 Min)
 
-- Browser: rendert HTML (Struktur), wendet CSS an (Aussehen) und führt JavaScript aus (Logik/Interaktivität). Alles passiert zunächst lokal im Browser.
-- Server: stellt Dateien bereit (z. B. `index.html`, Bilder, `.js`-Dateien) oder liefert Daten per API. In diesem Projekt reicht der Browser – ein Server ist optional.
+1. Einstieg: Was machen Browser & JS? (0–5 Min)
 
-## Kurzüberblick: HTML, CSS, JavaScript
+- Browser rendert HTML, wendet CSS an, führt JS aus. Kein Server nötig.
 
-### HTML (Struktur)
+2. Überblick zum Ziel (5–10 Min)
 
-- Bausteine: Tags/Elemente (`<h1>`, `<p>`, `<button>`, `<input>`, ...)
-- Attribute: zusätzliche Infos (`id`, `class`, `type`, `placeholder`, ...)
-- Semantik: nutze passende Elemente (z. B. `<form>`, `<label>`, `<main>`, ...)
+- In `index.html` seht ihr Platzhalter im Bereich `div#steuerung` und die Funktion `verbindeSteuerung()`.
+- Ziel: 6 Texte + 6 Farben steuern und mit einem Button würfeln.
 
-Beispiel Inputs:
+3. Aufgabe 1 – HTML bauen (10–25 Min)
+
+- Fügt im Bereich `div#steuerung` 6 Blöcke ein. Nutzt folgende ID‑Konvention:
+  - Text‑IDs: `seite1Text` … `seite6Text`
+  - Farb‑IDs: `seite1Farbe` … `seite6Farbe`
+- Fügt danach einen Button zum Starten hinzu: `wuerfelnBtn`
+
+Beispiel für einen Block (Seite 1):
 
 ```html
-<label for="anzahl">Anzahl</label>
-<input id="anzahl" type="number" min="1" value="1" />
-
-<label for="farbe">Farbe</label>
-<input id="farbe" type="color" value="#4f46e5" />
-
-<button id="start">Start</button>
+<div class="eingabe-container">
+  <input type="text" id="seite1Text" placeholder="Seite 1 Text" />
+  <input type="color" id="seite1Farbe" value="#ffcc00" />
+  <!-- Wiederhole für Seite 2–6 mit passenden IDs -->
+  <!-- Button unten separat anlegen -->
+  <!-- <input type="button" id="wuerfelnBtn" value="Würfeln" /> -->
+</div>
 ```
 
-### CSS (Design)
+Button unterhalb der Eingaben einfügen:
 
-- Selektoren (`.klasse`, `#id`, `button`, `input[type="number"]`, ...)
-- Box-Modell (margin, border, padding, content)
-- Layout (Flexbox, Grid)
-- Farben, Schriften, Abstände, Zustände (Hover, Focus)
+```html
+<input type="button" id="wuerfelnBtn" value="Würfeln" />
+```
 
-Beispiel Styling:
+Tipps:
+
+- IDs müssen exakt mit den späteren JS‑Arrays übereinstimmen.
+- Nutzt sprechende Platzhalter und sinnvolle Default‑Farben.
+
+4. Aufgabe 2 – CSS stylen (25–35 Min)
+
+- Ergänzt das Style‑Gerüst in `index.html` (Bereich `<style>`). Minimal‑Styles, die gut aussehen und schnell gehen:
 
 ```css
-:root {
-  --brand: #4f46e5;
-}
-
-body {
-  font-family: system-ui, sans-serif;
-  margin: 2rem;
-}
-
-.form {
-  display: grid;
-  gap: 0.75rem;
-  max-width: 420px;
-}
-
+/* Button Styling */
+input[type="button"],
 button {
-  background: var(--brand);
-  color: white;
-  padding: 0.5rem 1rem;
+  background: #4f46e5;
+  color: #fff;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 8px;
+  padding: 10px 14px;
   cursor: pointer;
 }
 
+input[type="button"]:hover,
 button:hover {
   filter: brightness(1.1);
 }
+
+/* Input Styling */
+input[type="text"],
+input[type="color"] {
+  padding: 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
+
+.eingabe-container {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
 ```
 
-### JavaScript (Interaktivität)
+5. Aufgabe 3 – JavaScript verbinden (35–50 Min)
 
-- Variablen, Funktionen, Events
-- DOM-Manipulation: Elemente finden, Werte auslesen, Inhalte ändern
-- Event-Listener für Klicks, Input-Änderungen, Form-Submit
-
-Beispiel Verknüpfung:
+- In `index.html` ist `verbindeSteuerung()` vorbereitet. Tragt eure IDs dort ein:
 
 ```js
-// DOM-Referenzen holen
-const inputAnzahl = document.querySelector("#anzahl");
-const inputFarbe = document.querySelector("#farbe");
-const startBtn = document.querySelector("#start");
+const textIds = [
+  "seite1Text",
+  "seite2Text",
+  "seite3Text",
+  "seite4Text",
+  "seite5Text",
+  "seite6Text",
+];
 
-// Klick-Handler registrieren
-startBtn.addEventListener("click", () => {
-  const anzahl = Number(inputAnzahl.value);
-  const farbe = inputFarbe.value;
+const farbIds = [
+  "seite1Farbe",
+  "seite2Farbe",
+  "seite3Farbe",
+  "seite4Farbe",
+  "seite5Farbe",
+  "seite6Farbe",
+];
 
-  // TODO: Eigene Logik einfügen oder mit Funktionen aus dice.js arbeiten
-  // Beispiel: Ausgabe in die Konsole oder DOM aktualisieren
-  console.log("Anzahl:", anzahl, "Farbe:", farbe);
-
-  const output = document.querySelector("#output");
-  if (output) {
-    output.textContent = `Gewählte Anzahl: ${anzahl}`;
-    output.style.color = farbe;
-  }
-});
+var button = document.getElementById("wuerfelnBtn");
 ```
 
-## Aufgaben
+Hinweise:
 
-> Ziel: Selbstständig Inputs bauen, stylen und mit JS verknüpfen. Starte klein, erweitere schrittweise.
+- Die App liefert Startwerte per `app.getSeitenTexte()` und `app.getSeitenFarben()` und aktualisiert sich bei `input`‑Events.
+- Der Button ruft `app.wuerfeln()` auf.
 
-1. HTML – Eingaben erstellen
+6. Testen, Show & Tell, Bonus (50–60 Min)
 
-- Baue ein Formular mit:
-  - mindestens einem `number`-Input (z. B. Anzahl)
-  - einem weiteren Input deiner Wahl (`text`, `color`, `checkbox`, `range`, `select`)
-  - einem `button` zum Starten/Auslösen
-- Nutze zu jedem Input ein passendes `<label>`.
+- Test: Ändert Texte/Farben → Wird der Würfel live aktualisiert? Klick → Würfeln?
+- Debug: F12 → „Konsole“, Meldungen lesen; IDs prüfen; Tippfehler sind häufig.
+- Bonusideen: Standardtexte setzen, Button stilistisch hervorheben, Platzhalter variieren.
 
-2. CSS – Erscheinungsbild gestalten
+## Cheat‑Sheet (für die Tafel)
 
-- Ordne die Felder übersichtlich an (z. B. Grid/Flexbox)
-- Hebe den Button visuell hervor
-- Style `:focus`-Zustände für bessere Bedienbarkeit
-- Achte auf ausreichenden Kontrast und Lesbarkeit
+- `document.getElementById("id")` → Element holen
+- `element.addEventListener("input" | "click", handler)` → Events verknüpfen
+- `input.value` → aktuellen Wert lesen/schreiben
+- App‑API: `app.setText(index, wert)`, `app.setFarbe(index, hex)`, `app.wuerfeln()`
 
-3. JavaScript – Logik verknüpfen
+## Kurz zu 3D & Physik
 
-- Lies die Werte aus den Inputs aus
-- Reagiere auf Klick (oder Form-Submit) und führe eine Aktion aus
-- Aktualisiere den DOM (z. B. Text ändern, Elemente ein-/ausblenden)
+- Three.js rendert die Szene im `<canvas id="szene">`.
+- In diesem Workshop nutzen wir den nicht‑physikbasierten Modus (`physikbasiert: false`) für weniger Komplexität.
 
-## Debugging-Tipps
-
-- Browser-Konsole öffnen (F12) → „Konsole“: Fehlermeldungen lesen, `console.log` nutzen
-- „Elemente“-Tab: HTML-Struktur und CSS live prüfen
-- Netzwerkanfragen im „Netzwerk“-Tab (falls später APIs dazukommen)
-
-## 3D im Web: Überblick
-
-- Rendering-Wege: Canvas 2D, WebGL, WebGPU (modern, experimentell), Bibliotheken wie Three.js
-- Szenen bestehen typischerweise aus: Szene, Kamera, Licht, Meshes (Geometrie + Material)
-
-### Physikbasiert vs. nicht-physikbasiert
-
-- Physikbasiert:
-  - Simulation realer Effekte (Schwerkraft, Kräfte, Kollisionen)
-  - Nutzt Physik-Engines (z. B. Cannon.js, Ammo.js)
-  - Vorteil: realistische Bewegung, glaubwürdiges Verhalten
-  - Nachteil: komplexer, Performance-Kosten, Feintuning nötig
-- Nicht-physikbasiert:
-  - Bewegung durch direkte Transformationen (Position, Rotation, Skalierung)
-  - Keyframe-Animationen, Tweening (z. B. GSAP), kinematische Steuerung
-  - Vorteil: volle Kontrolle, oft einfacher
-  - Nachteil: weniger „realistisch“ ohne zusätzlichen Aufwand
-
-Wann nutze ich was?
-
-- Spiele/Simulationen mit Kollisionen/Gravitation → physikbasiert
-- UI-Effekte, Visualisierungen, einfache Animationen → nicht-physikbasiert
-
-Mini-Experiment (Idee für Demo):
-
-- Nicht-physikbasiert: Würfel rotiert konstant um die Y-Achse (feste Rotationsgeschwindigkeit)
-- Physikbasiert: Würfel fällt nach unten, prallt auf Boden, kommt zum Liegen (Schwerkraft + Kollision)
-
-## Weiterführende Ressourcen
-
-- MDN Web Docs: HTML, CSS, JS Grundlagen – `https://developer.mozilla.org`
-- Flexbox & Grid Üben – `https://flexboxfroggy.com` und `https://cssgridgarden.com`
-- JavaScript Basics (freeCodeCamp) – `https://www.freecodecamp.org/learn`
-- Three.js Docs (3D im Web) – `https://threejs.org/docs/`
-- Cannon-es (Physik-Engine in JS) – `https://pmndrs.github.io/cannon-es/`
-
-Viel Spaß beim Ausprobieren und Bauen!
+Viel Erfolg und Spaß beim Bauen! TalentTage Ruhr – 30.09.2025 · Hochschule Ruhr West
