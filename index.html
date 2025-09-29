@@ -1,154 +1,157 @@
-<body>
-  <header>
-    <h1>Smarte Technik, starke Psyche: Ein Workshop fürs Wohlbefinden</h1>
-  </header>
-  <main>
-    <div class="bereich">
-      <div class="steuerung" id="steuerung">
-        <p>Hier müsst ihr die Steuerung für den Würfel einbauen.</p>
+<html>
+  <body>
+    <header>
+      <h1>Smarte Technik, starke Psyche: Ein Workshop fürs Wohlbefinden</h1>
+    </header>
+    <main>
+      <div class="bereich">
+        <div class="steuerung" id="steuerung">
+          <p>Hier müsst ihr die Steuerung für den Würfel einbauen.</p>
 
-        <!-- Aufgabe 1: Erstellt die nötigen Eingabefelder, 
+          <!-- Aufgabe 1: Erstellt die nötigen Eingabefelder, 
          um die Texte und Farben des Würfels zu kontrollieren und den Würfelwurf zu starten.
          Benenne die Eingabefelder entsprechend der Aufgabe.  -->
 
-        <div class="eingabe-container">
-          <!-- Textinput <input type="?" id="?"> -->
-          <!-- Farbinput <input type="?" id="?"> -->
+          <div class="eingabe-container">
+            <!-- Textinput <input type="?" id="?"> -->
+            <!-- Farbinput <input type="?" id="?"> -->
+          </div>
+          <div class="eingabe-container">
+            <!-- Textinput <input type="?" id="?"> -->
+            <!-- Farbinput <input type="?" id="?"> -->
+          </div>
+          <div class="eingabe-container">
+            <!-- Textinput <input type="?" id="?"> -->
+            <!-- Farbinput <input type="?" id="?"> -->
+          </div>
+          <div class="eingabe-container">
+            <!-- Textinput <input type="?" id="?"> -->
+            <!-- Farbinput <input type="?" id="?"> -->
+          </div>
+          <div class="eingabe-container">
+            <!-- Textinput <input type="?" id="?"> -->
+            <!-- Farbinput <input type="?" id="?"> -->
+          </div>
+          <div class="eingabe-container">
+            <!-- Textinput <input type="?" id="?"> -->
+            <!-- Farbinput <input type="?" id="?"> -->
+          </div>
         </div>
-        <div class="eingabe-container">
-          <!-- Textinput <input type="?" id="?"> -->
-          <!-- Farbinput <input type="?" id="?"> -->
-        </div>
-        <div class="eingabe-container">
-          <!-- Textinput <input type="?" id="?"> -->
-          <!-- Farbinput <input type="?" id="?"> -->
-        </div>
-        <div class="eingabe-container">
-          <!-- Textinput <input type="?" id="?"> -->
-          <!-- Farbinput <input type="?" id="?"> -->
-        </div>
-        <div class="eingabe-container">
-          <!-- Textinput <input type="?" id="?"> -->
-          <!-- Farbinput <input type="?" id="?"> -->
-        </div>
-        <div class="eingabe-container">
-          <!-- Textinput <input type="?" id="?"> -->
-          <!-- Farbinput <input type="?" id="?"> -->
-        </div>
+        <!-- Button <input type='?' id='?' value='?' -->
       </div>
-      <!-- Button <input type='?' id='?' value='?' -->
-    </div>
-    <div class="bereich anzeige">
-      <canvas id="szene"></canvas>
-    </div>
-  </main>
-  <div class="grid">
-    <div class="hinweis" id="hinweis">
-      Rolle den Würfel und finde die richtige Antwort!
-    </div>
-    <footer>
-      <h2>Talenttage Ruhr 30.09.2025</h2>
+      <div class="bereich anzeige">
+        <canvas id="szene"></canvas>
+      </div>
+    </main>
+    <div class="grid">
+      <div class="hinweis" id="hinweis">
+        Rolle den Würfel und finde die richtige Antwort!
+      </div>
+      <footer>
+        <h2>Talenttage Ruhr 30.09.2025</h2>
 
-      <p>Hochschule Ruhr West</p>
-    </footer>
-  </div>
-</body>
+        <p>Hochschule Ruhr West</p>
+      </footer>
+    </div>
+  </body>
 
-<head>
-  <!-- Aufgabe 2: Passt eure Eingabefelder an das Design der Seite an.  -->
+  <head>
+    <!-- Aufgabe 2: Findet heraus wie ihr bestimmte Elemente in CSS ansprechen könnt. -->
+    <!-- Passt die bestimmten CSS styles entsprechend dem Rest der Website an. Tip: schaut euch style.css an. -->
 
-  <style>
-    /* input[type="?"] { 
+    <style>
+      /* input[type="?"] { 
       ?
     } */
 
-    /* input[type="?"] { 
+      /* input[type="?"] { 
       ?
     } */
 
-    /* input[type="?"] { 
+      /* input[type="?"] { 
       ?
     } */
-  </style>
+    </style>
 
-  <!-- Aufgabe 3: Füllt die fehlenden Werte in der Funktion „VerbindeSteuerung“ aus. -->
-  <!-- Hierzu müsst ihr die Id's eurer Text, Farb und Button inputs eintragen -->
+    <!-- Aufgabe 3: Füllt die fehlenden Werte in der Funktion „VerbindeSteuerung“ aus. -->
+    <!-- Hierzu müsst ihr die Id's eurer Text, Farb und Button inputs eintragen -->
 
-  <script>
-    function verbindeSteuerung() {
-      const app = WuerfelApp({
-        canvasId: "szene",
-        hinweisId: "hinweis",
-        physikbasiert: false,
-      });
-
-      const textIds = [
-        // ?
-        // ?
-        // ?
-        // ?
-        // ?
-        // ?
-      ];
-
-      const farbIds = [
-        // ?
-        // ?
-        // ?
-        // ?
-        // ?
-        // ?
-      ];
-
-      var button = document.getElementById("?");
-
-      if (button) {
-        button.addEventListener("click", function () {
-          app.wuerfeln();
+    <script>
+      function verbindeSteuerung() {
+        const app = WuerfelApp({
+          canvasId: "szene",
+          hinweisId: "hinweis",
+          physikbasiert: false,
         });
-      }
 
-      const aktuelleTexte = app.getSeitenTexte();
-      const aktuelleFarben = app.getSeitenFarben();
+        const textIds = [
+          // ?
+          // ?
+          // ?
+          // ?
+          // ?
+          // ?
+        ];
 
-      const setTextEventListener = (element, index) => {
-        if (element) {
-          element.addEventListener("input", function (e) {
-            app.setText(index, e.target.value);
+        const farbIds = [
+          // ?
+          // ?
+          // ?
+          // ?
+          // ?
+          // ?
+        ];
+
+        var button = document.getElementById("?");
+
+        if (button) {
+          button.addEventListener("click", function () {
+            app.wuerfeln();
           });
         }
-      };
 
-      const setFarbeEventListener = (element, index) => {
-        if (element) {
-          element.addEventListener("input", function (e) {
-            app.setFarbe(index, e.target.value);
-          });
-        }
-      };
+        const aktuelleTexte = app.getSeitenTexte();
+        const aktuelleFarben = app.getSeitenFarben();
 
-      for (var index = 0; index < 6; index++) {
-        var textInput = document.getElementById(textIds[index]);
-        if (textInput) {
-          textInput.value = app.getSeitenTexte()[index];
-          setTextEventListener(textInput, index);
-        }
-        var farbeInput = document.getElementById(farbIds[index]);
-        if (farbeInput) {
-          farbeInput.value = app.getSeitenFarben()[index];
-          setFarbeEventListener(farbeInput, index);
+        const setTextEventListener = (element, index) => {
+          if (element) {
+            element.addEventListener("input", function (e) {
+              app.setText(index, e.target.value);
+            });
+          }
+        };
+
+        const setFarbeEventListener = (element, index) => {
+          if (element) {
+            element.addEventListener("input", function (e) {
+              app.setFarbe(index, e.target.value);
+            });
+          }
+        };
+
+        for (var index = 0; index < 6; index++) {
+          var textInput = document.getElementById(textIds[index]);
+          if (textInput) {
+            textInput.value = app.getSeitenTexte()[index];
+            setTextEventListener(textInput, index);
+          }
+          var farbeInput = document.getElementById(farbIds[index]);
+          if (farbeInput) {
+            farbeInput.value = app.getSeitenFarben()[index];
+            setFarbeEventListener(farbeInput, index);
+          }
         }
       }
-    }
 
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", verbindeSteuerung);
-    } else {
-      verbindeSteuerung();
-    }
-  </script>
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", verbindeSteuerung);
+      } else {
+        verbindeSteuerung();
+      }
+    </script>
 
-  <link rel="stylesheet" href="./Helfer/style.css" />
-  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
-  <script src="./Helfer/wuerfel.js"></script>
-</head>
+    <link rel="stylesheet" href="./Helfer/style.css" />
+    <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+    <script src="./Helfer/wuerfel.js"></script>
+  </head>
+</html>

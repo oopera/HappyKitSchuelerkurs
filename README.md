@@ -1,10 +1,10 @@
-# HappyKit Schülerkurs – 60‑Minuten Workshop: Websites mit HTML, CSS & JS
+# HappyKit Schülerkurs Workshop: Websites mit HTML, CSS & JS
 
-Kurz und praxisnah: In 1 Stunde bauen die Schüler:innen einen interaktiven 3D‑„Prompt‑Würfel“. Sie erstellen HTML‑Inputs, stylen sie mit CSS und verbinden alles per JavaScript, damit Texte/Farben der sechs Würfelseiten live gesteuert und per Button „gewürfelt“ werden können.
+Wir erstellen HTML‑Inputs, stylen sie mit CSS und verbinden alles per JavaScript, damit Texte/Farben der sechs Würfelseiten live gesteuert und per Button „gewürfelt“ werden können.
 
 ## Vorbereitung (2 Min)
 
-- Öffne `index.html` direkt im Browser (Doppelklick) oder mit Live Server.
+- Öffne `index.html` direkt im Browser (Doppelklick).
 - Relevante Dateien:
   - `index.html` – Seite, Aufgaben und Script‑Hook `verbindeSteuerung()`
   - `Helfer/style.css` – Basis‑Styles
@@ -30,10 +30,10 @@ Kurz und praxisnah: In 1 Stunde bauen die Schüler:innen einen interaktiven 3D�
 
 3. Aufgabe 1 – HTML bauen (10–25 Min)
 
-- Fügt im Bereich `div#steuerung` 6 Blöcke ein. Nutzt folgende ID‑Konvention:
+- Fügt im Bereich `div#steuerung` 6 Blöcke ein. Ihr könnt folgende ID‑Konvention nutzen:
   - Text‑IDs: `seite1Text` … `seite6Text`
   - Farb‑IDs: `seite1Farbe` … `seite6Farbe`
-- Fügt danach einen Button zum Starten hinzu: `wuerfelnBtn`
+- Fügt danach einen Button zum Starten hinzu mit ID: `wuerfelnBtn`
 
 Beispiel für einen Block (Seite 1):
 
@@ -56,7 +56,7 @@ Button unterhalb der Eingaben einfügen:
 Tipps:
 
 - IDs müssen exakt mit den späteren JS‑Arrays übereinstimmen.
-- Nutzt sprechende Platzhalter und sinnvolle Default‑Farben.
+- Nutzt sinvolle Platzhalter und sinnvolle Default‑Farben.
 
 4. Aufgabe 2 – CSS stylen (25–35 Min)
 
@@ -70,7 +70,8 @@ button {
   color: #fff;
   border: none;
   border-radius: 8px;
-  padding: 10px 14px;
+  padding: 8px 4px;
+  width: 100%;
   cursor: pointer;
 }
 
@@ -82,15 +83,9 @@ button:hover {
 /* Input Styling */
 input[type="text"],
 input[type="color"] {
-  padding: 8px;
+  padding: 4px 2px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
-}
-
-.eingabe-container {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 8px;
 }
 ```
 
@@ -131,7 +126,7 @@ Hinweise:
 - Debug: F12 → „Konsole“, Meldungen lesen; IDs prüfen; Tippfehler sind häufig.
 - Bonusideen: Standardtexte setzen, Button stilistisch hervorheben, Platzhalter variieren.
 
-## Cheat‑Sheet (für die Tafel)
+## Cheat‑Sheet
 
 - `document.getElementById("id")` → Element holen
 - `element.addEventListener("input" | "click", handler)` → Events verknüpfen
@@ -141,6 +136,11 @@ Hinweise:
 ## Kurz zu 3D & Physik
 
 - Three.js rendert die Szene im `<canvas id="szene">`.
-- In diesem Workshop nutzen wir den nicht‑physikbasierten Modus (`physikbasiert: false`) für weniger Komplexität.
+- Die Animation kann durch umstellen des nicht‑physikbasierten Modus (`physikbasiert: false`) geändert werden.
+
+## GitHub
+
+- Das Projekt könnt ihr finden unter https://github.com/oopera/HappyKitSchuelerkurs
+- Erstellt euch einen Account und gebt dem Projekt einen Stern um es zu speichern.
 
 Viel Erfolg und Spaß beim Bauen! TalentTage Ruhr – 30.09.2025 · Hochschule Ruhr West
